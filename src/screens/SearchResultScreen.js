@@ -1,5 +1,5 @@
 import React from 'react';
-import {ScrollView, View} from 'react-native';
+import {ScrollView} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {base_url} from '../../conf.js';
 
@@ -9,18 +9,10 @@ import {COLORS} from '../constants';
 // components
 import ButtonCard from '../components/ButtonCard.js';
 import LoadingIndicator from '../components/LoadingIndicator.js';
-import SearchBar from '../components/SearchBar.js';
 
 const SearchResultScreen = props => {
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
   const [users, setUsers] = React.useState([]);
-
-  setTimeout(() => {
-    if (loading && users.length === 0) {
-      props.navigation.goBack();
-      props.navigation.navigate('warning', {status: 2});
-    }
-  }, 20000);
 
   React.useEffect(() => {
     AsyncStorage.getItem('@token')
@@ -42,75 +34,75 @@ const SearchResultScreen = props => {
               res
                 .json()
                 .then(json => {
-                  setUsers(
-                    json.map((data, index) => {
-                      if (data.status === '0') {
-                        return (
-                          <ButtonCard
-                            key={'srch-rslt-btn-crd-' + index}
-                            image={data.image}
-                            title={data.name}
-                            body={data.body}
-                          />
-                        );
-                      } else if (data.status === '1') {
-                        return (
-                          <ButtonCard
-                            key={'srch-rslt-btn-crd-' + index}
-                            image={data.image}
-                            title={data.title}
-                            body={data.body}
-                          />
-                        );
-                      } else if (data.status === '2') {
-                        return (
-                          <ButtonCard
-                            key={'srch-rslt-btn-crd-' + index}
-                            image={data.image}
-                            title={data.title}
-                            body={data.body}
-                          />
-                        );
-                      } else if (data.status === '3') {
-                        return (
-                          <ButtonCard
-                            key={'srch-rslt-btn-crd-' + index}
-                            image={data.image}
-                            title={data.title}
-                            body={data.email}
-                          />
-                        );
-                      }
-                    }),
-                  );
+                  const tmp = json.map((data, index) => {
+                    if (data.status === '0') {
+                      return (
+                        <ButtonCard
+                          key={'srch-rslt-btn-crd-' + index}
+                          image={data.image}
+                          title={data.name}
+                          body={data.body}
+                        />
+                      );
+                    } else if (data.status === '1') {
+                      return (
+                        <ButtonCard
+                          key={'srch-rslt-btn-crd-' + index}
+                          image={data.image}
+                          title={data.title}
+                          body={data.body}
+                        />
+                      );
+                    } else if (data.status === '2') {
+                      return (
+                        <ButtonCard
+                          key={'srch-rslt-btn-crd-' + index}
+                          image={data.image}
+                          title={data.title}
+                          body={data.body}
+                        />
+                      );
+                    } else if (data.status === '3') {
+                      return (
+                        <ButtonCard
+                          key={'srch-rslt-btn-crd-' + index}
+                          image={data.image}
+                          title={data.title}
+                          body={data.email}
+                        />
+                      );
+                    }
+                  });
+                  setLoading(false);
+                  if (tmp.length === 0) {
+                    props.navigation.goBack();
+                    return props.navigation.navigate('warning', {status: 0});
+                  } else {
+                    setUsers(tmp);
+                  }
                 })
                 .catch(error => {
+                  setLoading(false);
                   props.navigation.goBack();
                   return props.navigation.navigate('warning', {status: 3});
                 });
             } else if (res.status === 500) {
+              setLoading(false);
               props.navigation.goBack();
               props.navigation.navigate('warning', {status: 1});
             }
-            setLoading(false);
           })
           .catch(error => {
+            setLoading(false);
             props.navigation.goBack();
             return props.navigation.navigate('warning', {status: 3});
           });
+        setLoading(true);
       })
       .catch(error => {
-        props.navigation.goBack();
-        return props.navigation.navigate('warning', {status: 3});
+        props.navigation.navigate('auth');
       });
   }, []);
-
-  const is_empty = () => {
-    if (!loading && !users.length) {
-      props.navigation.goBack();
-      props.navigations.navigate('warning', {status: 0});
-    }
-  };
 
   return (
     <>
@@ -123,7 +115,6 @@ const SearchResultScreen = props => {
         {users}
       </ScrollView>
       <LoadingIndicator show={loading} />
-      {is_empty()}
     </>
   );
 };

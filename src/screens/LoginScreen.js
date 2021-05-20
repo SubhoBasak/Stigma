@@ -11,15 +11,16 @@ import ShutterView from '../components/ShutterView.js';
 import InputBox from '../components/InputBox.js';
 import PasswordBox from '../components/PasswordBox.js';
 import PushButton from '../components/PushButton.js';
+import LoadingIndicator from '../components/LoadingIndicator.js';
 
 const LoginScreen = props => {
   const [email, setEmail] = React.useState(null);
   const [password, setPassword] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
 
   const login_api = () => {
     if (!(email && password)) {
-      alert('Please enter the email and password.');
-      return;
+      return alert('Please enter the email and password.');
     }
 
     fetch(base_url + '/user/login', {
@@ -40,42 +41,44 @@ const LoginScreen = props => {
             });
         } else if (res.status === 401) {
           alert('User not verified!');
-          return;
         } else if (res.status === 500) {
-          return props.navigation.navigate('warning', {status: 1});
+          props.navigation.navigate('warning', {status: 1});
         }
+        setLoading(false);
       })
       .catch(error => {
+        setLoading(false);
         return props.navigation.navigate('warning', {status: 3});
       });
-    setTimeout(() => {
-      return props.navigation.navigate('warning', {status: 2});
-    }, 10000);
+    setLoading(true);
   };
 
   return (
-    <ShutterView
-      footer={
-        <Text
-          onPress={() => props.navigation.navigate('register')}
-          style={style.footer}>
-          Register Now
-        </Text>
-      }>
-      <InputBox
-        placeholder="Enter the email"
-        onChangeText={text => setEmail(text.trim())}
-        autoCapitalize="none"
-      />
-      <PasswordBox
-        placeholder="Enter the password"
-        onChangeText={text => setPassword(text.trim())}
-      />
-      <PushButton text="Log In" onPress={login_api} />
-      <TouchableOpacity onPress={() => props.navigation.navigate('forgot')}>
-        <Text style={style.link}>Forgot Password</Text>
-      </TouchableOpacity>
-    </ShutterView>
+    <>
+      <ShutterView
+        footer={
+          <Text
+            onPress={() => props.navigation.navigate('register')}
+            style={style.footer}>
+            Register Now
+          </Text>
+        }>
+        <InputBox
+          placeholder="Enter the email"
+          onChangeText={text => setEmail(text.trim())}
+          autoCapitalize="none"
+        />
+        <PasswordBox
+          placeholder="Enter the password"
+          onChangeText={text => setPassword(text.trim())}
+        />
+        <PushButton text="Log In" onPress={login_api} />
+        <TouchableOpacity onPress={() => props.navigation.navigate('forgot')}>
+          <Text style={style.link}>Forgot Password</Text>
+        </TouchableOpacity>
+      </ShutterView>
+      <LoadingIndicator show={loading} />
+    </>
   );
 };
 

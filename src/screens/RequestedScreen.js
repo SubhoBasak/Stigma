@@ -37,8 +37,8 @@ const Requested = props => {
           });
       })
       .catch(error => {
-        props.navigation.goBack();
-        return props.navigation.navigate('warning', {status: 3});
+        alert('Please login again.');
+        return props.navigation.navigate('auth');
       });
   };
 

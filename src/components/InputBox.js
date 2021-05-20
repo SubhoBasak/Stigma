@@ -13,6 +13,8 @@ const InputBox = props => {
         onChangeText={props.onChangeText}
         autoCapitalize={props.autoCapitalize}
         autoCompleteType={props.autoCompleteType}
+        keyboardType={props.keyboardType}
+        maxLength={props.maxLength}
       />
     </View>
   );
