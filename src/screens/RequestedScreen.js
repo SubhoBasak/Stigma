@@ -94,8 +94,8 @@ const Requested = props => {
   }, [reload]);
 
   return (
-    <ScrollView style={{height: '100%'}}>
-      <View style={{height: '100%', backgroundColor: COLORS.white}}>
+    <ScrollView style={{height: '100%', backgroundColor: COLORS.white}}>
+      <View style={{height: '100%'}}>
         <SearchBar />
         {allUsers}
         <View style={{height: 500}} />

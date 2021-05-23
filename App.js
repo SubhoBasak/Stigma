@@ -9,12 +9,15 @@ import {COLORS, FONTS} from './src/constants';
 // screens
 import AuthScreen from './src/screens/AuthScreen.js';
 import MainScreen from './src/screens/MainScreen.js';
-import BlockedScreen from './src/screens/BlockedScreen';
-import AlbumScreen from './src/screens/AlbumScreen';
-import PhotosScreen from './src/screens/PhotosScreen';
-import UserProfileScreen from './src/screens/UserProfileScreen';
-import SearchResultScreen from './src/screens/SearchResultScreen';
-import WarningScreen from './src/screens/WarningScreen';
+import BlockedScreen from './src/screens/BlockedScreen.js';
+import AlbumScreen from './src/screens/AlbumScreen.js';
+import PhotosScreen from './src/screens/PhotosScreen.js';
+import UserProfileScreen from './src/screens/UserProfileScreen.js';
+import SearchResultScreen from './src/screens/SearchResultScreen.js';
+import WarningScreen from './src/screens/WarningScreen.js';
+import EditProfileScreen from './src/screens/EditProfileScreen.js';
+import ZoomScreen from './src/screens/ZoomScreen';
+import SplashScreen from './src/screens/SplashScreen';
 
 const StackNav = createStackNavigator();
 
@@ -35,7 +38,8 @@ const App = () => {
               shadowOpacity: 1,
               shadowRadius: 3,
             },
-          }}>
+          }}
+          initialRouteName="splash">
           <StackNav.Screen name="auth" component={AuthScreen} />
           <StackNav.Screen name="main" component={MainScreen} />
           <StackNav.Screen
@@ -51,15 +55,26 @@ const App = () => {
           <StackNav.Screen
             name="photos"
             component={PhotosScreen}
-            options={{headerShown: true, headerTint: 'Photos'}}
+            options={{headerShown: true, headerTitle: 'Photos'}}
+          />
+          <StackNav.Screen name="profile" component={UserProfileScreen} />
+          <StackNav.Screen
+            name="search"
+            component={SearchResultScreen}
+            options={{headerShown: true, headerTitle: 'Search'}}
+          />
+          <StackNav.Screen name="warning" component={WarningScreen} />
+          <StackNav.Screen
+            name="edit_profile"
+            component={EditProfileScreen}
+            options={{headerShown: true, headerTitle: 'Edit profile'}}
           />
           <StackNav.Screen
-            name="profile"
-            component={UserProfileScreen}
-            options={{headerTint: 'Photos'}}
+            name="zoom"
+            component={ZoomScreen}
+            options={{headerShown: true, headerTitle: 'Image view'}}
           />
-          <StackNav.Screen name="search" component={SearchResultScreen} />
-          <StackNav.Screen name="warning" component={WarningScreen} />
+          <StackNav.Screen name="splash" component={SplashScreen} />
         </StackNav.Navigator>
       </NavigationContainer>
     </SafeAreaView>

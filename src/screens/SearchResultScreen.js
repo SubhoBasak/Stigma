@@ -13,6 +13,27 @@ import LoadingIndicator from '../components/LoadingIndicator.js';
 const SearchResultScreen = props => {
   const [loading, setLoading] = React.useState(false);
   const [users, setUsers] = React.useState([]);
+  const [token, setToken] = React.useState(null);
+
+  const send_request_api = uid => {
+    fetch(base_url + '/connection/send_request', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', Authorization: token},
+      body: JSON.stringify({user: uid}),
+    });
+  };
+
+  const accept_request_api = () => {
+    return;
+  };
+
+  const reject_request_api = () => {
+    return;
+  };
+
+  const cancel_request_api = () => {
+    return;
+  };
 
   React.useEffect(() => {
     AsyncStorage.getItem('@token')
@@ -41,7 +62,9 @@ const SearchResultScreen = props => {
                           key={'srch-rslt-btn-crd-' + index}
                           image={data.image}
                           title={data.name}
-                          body={data.body}
+                          body={data.email}
+                          button1="Profile"
+                          button2="Request"
                         />
                       );
                     } else if (data.status === '1') {
@@ -49,8 +72,10 @@ const SearchResultScreen = props => {
                         <ButtonCard
                           key={'srch-rslt-btn-crd-' + index}
                           image={data.image}
-                          title={data.title}
-                          body={data.body}
+                          title={data.name}
+                          body="Connection requested sended"
+                          button1="Profile"
+                          button2="Cancel"
                         />
                       );
                     } else if (data.status === '2') {
@@ -58,8 +83,10 @@ const SearchResultScreen = props => {
                         <ButtonCard
                           key={'srch-rslt-btn-crd-' + index}
                           image={data.image}
-                          title={data.title}
-                          body={data.body}
+                          title={data.name}
+                          body="Sended you connection request"
+                          button1="Accept"
+                          button2="Reject"
                         />
                       );
                     } else if (data.status === '3') {
@@ -67,8 +94,10 @@ const SearchResultScreen = props => {
                         <ButtonCard
                           key={'srch-rslt-btn-crd-' + index}
                           image={data.image}
-                          title={data.title}
+                          title={data.name}
                           body={data.email}
+                          button1="Profile"
+                          button2="Message"
                         />
                       );
                     }

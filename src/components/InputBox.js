@@ -15,6 +15,7 @@ const InputBox = props => {
         autoCompleteType={props.autoCompleteType}
         keyboardType={props.keyboardType}
         maxLength={props.maxLength}
+        value={props.value}
       />
     </View>
   );

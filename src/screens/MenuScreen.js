@@ -46,6 +46,7 @@ const MenuScreen = props => {
         <MenuItem
           icon={<IconFE name="edit" color={COLORS.primary} size={28} />}
           text="Edit Profile"
+          onPress={() => props.navigation.navigate('edit_profile')}
         />
         <MenuItem
           icon={<IconFE name="camera" color={COLORS.primary} size={28} />}

@@ -1,61 +1,68 @@
 import React from 'react';
-import {ScrollView, StyleSheet, View, Image, Dimensions} from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  Image,
+  Dimensions,
+  TouchableOpacity,
+} from 'react-native';
 import {COLORS} from '../constants';
 
 const size = Math.floor(Dimensions.get('window').width / 3) - 2;
 
 const PhotosScreen = props => {
   const all_photos = [
-    <Image
+    <TouchableOpacity
       key="img-0"
-      source={{uri: 'https://picsum.photos/256'}}
-      style={style.image}
-    />,
-    <Image
+      onPress={() => props.navigation.navigate('zoom', {init_img_indx: 0})}>
+      <Image source={{uri: 'https://picsum.photos/256'}} style={style.image} />
+    </TouchableOpacity>,
+    <TouchableOpacity
       key="img-1"
-      source={{uri: 'https://picsum.photos/256'}}
-      style={style.image}
-    />,
-    <Image
+      onPress={() => props.navigation.navigate('zoom', {init_img_indx: 1})}>
+      <Image source={{uri: 'https://picsum.photos/256'}} style={style.image} />
+    </TouchableOpacity>,
+    <TouchableOpacity
       key="img-2"
-      source={{uri: 'https://picsum.photos/256'}}
-      style={style.image}
-    />,
-    <Image
+      onPress={() => props.navigation.navigate('zoom', {init_img_indx: 2})}>
+      <Image source={{uri: 'https://picsum.photos/256'}} style={style.image} />
+    </TouchableOpacity>,
+    <TouchableOpacity
       key="img-3"
-      source={{uri: 'https://picsum.photos/256'}}
-      style={style.image}
-    />,
-    <Image
+      onPress={() => props.navigation.navigate('zoom', {init_img_indx: 3})}>
+      <Image source={{uri: 'https://picsum.photos/256'}} style={style.image} />
+    </TouchableOpacity>,
+    <TouchableOpacity
       key="img-4"
-      source={{uri: 'https://picsum.photos/256'}}
-      style={style.image}
-    />,
-    <Image
+      onPress={() => props.navigation.navigate('zoom', {init_img_indx: 4})}>
+      <Image source={{uri: 'https://picsum.photos/256'}} style={style.image} />
+    </TouchableOpacity>,
+    <TouchableOpacity
       key="img-5"
-      source={{uri: 'https://picsum.photos/256'}}
-      style={style.image}
-    />,
-    <Image
+      onPress={() => props.navigation.navigate('zoom', {init_img_indx: 5})}>
+      <Image source={{uri: 'https://picsum.photos/256'}} style={style.image} />
+    </TouchableOpacity>,
+    <TouchableOpacity
       key="img-6"
-      source={{uri: 'https://picsum.photos/256'}}
-      style={style.image}
-    />,
-    <Image
+      onPress={() => props.navigation.navigate('zoom', {init_img_indx: 6})}>
+      <Image source={{uri: 'https://picsum.photos/256'}} style={style.image} />
+    </TouchableOpacity>,
+    <TouchableOpacity
       key="img-7"
-      source={{uri: 'https://picsum.photos/256'}}
-      style={style.image}
-    />,
-    <Image
+      onPress={() => props.navigation.navigate('zoom', {init_img_indx: 7})}>
+      <Image source={{uri: 'https://picsum.photos/256'}} style={style.image} />
+    </TouchableOpacity>,
+    <TouchableOpacity
       key="img-8"
-      source={{uri: 'https://picsum.photos/256'}}
-      style={style.image}
-    />,
-    <Image
+      onPress={() => props.navigation.navigate('zoom', {init_img_indx: 8})}>
+      <Image source={{uri: 'https://picsum.photos/256'}} style={style.image} />
+    </TouchableOpacity>,
+    <TouchableOpacity
       key="img-9"
-      source={{uri: 'https://picsum.photos/256'}}
-      style={style.image}
-    />,
+      onPress={() => props.navigation.navigate('zoom', {init_img_indx: 9})}>
+      <Image source={{uri: 'https://picsum.photos/256'}} style={style.image} />
+    </TouchableOpacity>,
   ];
 
   return (

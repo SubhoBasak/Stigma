@@ -19,8 +19,8 @@ const BlockedScreen = () => {
   ];
 
   return (
-    <ScrollView style={{height: '100%'}}>
-      <View style={{height: '100%', backgroundColor: COLORS.white}}>
+    <ScrollView style={{height: '100%', backgroundColor: COLORS.white}}>
+      <View style={{height: '100%'}}>
         {allUsers}
         <View style={{height: 500}} />
       </View>
