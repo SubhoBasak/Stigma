@@ -1,5 +1,6 @@
 import React from 'react';
 import {Image, StyleSheet, TouchableOpacity, View, Text} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 
 // icons
 import IconFA from 'react-native-vector-icons/FontAwesome';
@@ -13,9 +14,16 @@ import {COLORS, FONTS} from '../constants';
 import InfoCard from './InfoCard.js';
 
 const PostCard = props => {
+  const navigation = useNavigation();
+
   return (
     <View style={{marginBottom: 20}}>
-      <InfoCard image={props.profile} title={props.user} body={props.caps} />
+      <InfoCard
+        image={props.profile}
+        title={props.user}
+        body={props.caps}
+        card_press={() => navigation.navigate('comment')}
+      />
       <View>
         <Image style={style.image} source={{uri: props.image}} />
       </View>
@@ -36,7 +44,9 @@ const PostCard = props => {
           />
           <Text style={style.button_text}>{props.love}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={style.button}>
+        <TouchableOpacity
+          style={style.button}
+          onPress={() => navigation.navigate('comment')}>
           <IconOC name="comment" size={24} color={COLORS.slate_1} />
           <Text style={style.button_text}>{props.comment}</Text>
         </TouchableOpacity>
