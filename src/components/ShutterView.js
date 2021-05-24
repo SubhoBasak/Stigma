@@ -33,8 +33,8 @@ const style = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.25,
-    shadowColor: '#000000',
+    shadowOpacity: 1,
+    shadowColor: COLORS.gray_3,
     elevation: 4,
   },
   logo: {
