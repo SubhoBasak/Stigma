@@ -5,6 +5,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Button,
+  Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -72,9 +74,20 @@ const MenuScreen = props => {
         <MenuItem
           icon={<IconMI name="logout" color={COLORS.primary} size={28} />}
           text="Log Out"
-          onPress={async () => {
-            await AsyncStorage.removeItem('@token');
-            props.navigation.navigate('auth');
+          onPress={() => {
+            Alert.alert('Logout', 'Do you really want to logout?', [
+              {
+                text: 'Yes',
+                onPress: () => {
+                  AsyncStorage.removeItem('@token');
+                  props.navigation.navigate('auth');
+                },
+              },
+              {
+                text: 'No',
+                onPress: () => {},
+              },
+            ]);
           }}
         />
       </ScrollView>

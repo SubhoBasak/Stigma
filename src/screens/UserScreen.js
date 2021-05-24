@@ -24,8 +24,8 @@ const UserScreen = props => {
         labelStyle: {fontFamily: FONTS.font_regular, fontSize: 12},
       }}>
       <TopNav.Screen name="Connected" component={Connected} />
-      <TopNav.Screen name="Requested" component={Requested} />
       <TopNav.Screen name="Requests" component={Requests} />
+      <TopNav.Screen name="Requested" component={Requested} />
     </TopNav.Navigator>
   );
 };

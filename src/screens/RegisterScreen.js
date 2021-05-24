@@ -32,7 +32,6 @@ const RegisterScreen = props => {
       }),
     })
       .then(res => {
-        console.log(res.status);
         if (res.status === 200) {
           props.navigation.navigate('verify', {email});
         } else if (res.status === 409) {

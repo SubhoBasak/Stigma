@@ -8,8 +8,9 @@ import {COLORS} from '../constants';
 // components
 import PostCard from '../components/PostCard.js';
 import Compose from '../components/Compose.js';
+import InfoCard from '../components/InfoCard.js';
 
-const CommentScreen = () => {
+const CommentScreen = props => {
   return (
     <>
       <ScrollView
@@ -24,8 +25,33 @@ const CommentScreen = () => {
           comment="1K"
           share="100"
         />
+        <InfoCard
+          card_press={() => props.navigation.navigate('profile')}
+          title="User Name"
+          body="This is a long long long comment for testing. This is a long long long comment for testing."
+        />
+        <InfoCard
+          card_press={() => props.navigation.navigate('profile')}
+          title="User Name"
+          body="This is a long long long comment for testing. This is a long long long comment for testing."
+        />
+        <InfoCard
+          card_press={() => props.navigation.navigate('profile')}
+          title="User Name"
+          body="This is a long long long comment for testing. This is a long long long comment for testing."
+        />
+        <InfoCard
+          card_press={() => props.navigation.navigate('profile')}
+          title="User Name"
+          body="This is a long long long comment for testing. This is a long long long comment for testing."
+        />
+        <InfoCard
+          card_press={() => props.navigation.navigate('profile')}
+          title="User Name"
+          body="This is a long long long comment for testing. This is a long long long comment for testing."
+        />
       </ScrollView>
-      <Compose />
+      <Compose placeholder="Write comment here..." />
     </>
   );
 };

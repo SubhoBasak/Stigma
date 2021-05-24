@@ -32,7 +32,12 @@ const ButtonCard = props => {
 
   return (
     <View>
-      <InfoCard image={props.image} title={props.title} body={props.body} />
+      <InfoCard
+        image={props.image}
+        title={props.title}
+        body={props.body}
+        card_press={props.card_press}
+      />
       <View
         style={{
           display: 'flex',

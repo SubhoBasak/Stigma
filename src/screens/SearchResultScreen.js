@@ -12,15 +12,38 @@ import LoadingIndicator from '../components/LoadingIndicator.js';
 
 const SearchResultScreen = props => {
   const [loading, setLoading] = React.useState(false);
+  const [reload, setReload] = React.useState(false);
   const [users, setUsers] = React.useState([]);
-  const [token, setToken] = React.useState(null);
 
   const send_request_api = uid => {
-    fetch(base_url + '/connection/send_request', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json', Authorization: token},
-      body: JSON.stringify({user: uid}),
-    });
+    AsyncStorage.getItem('@token')
+      .then(token => {
+        fetch(base_url + '/connection/send_request', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json', Authorization: token},
+          body: JSON.stringify({user: uid}),
+        })
+          .then(res => {
+            setLoading(false);
+            if (res.status === 200) {
+              setReload(!reload);
+            } else if (res.status === 401) {
+              alert('Unauthorized User! Please login now.');
+              props.navigation.navigate('auth');
+            } else {
+              props.navigation.navigate('warning', {status: 3});
+            }
+          })
+          .catch(error => {
+            setLoading(false);
+            props.navigation.navigate('warning', {status: 3});
+          });
+        setLoading(true);
+      })
+      .catch(error => {
+        alert('Unauthorized User! Please login now.');
+        props.navigation.navigate('auth');
+      });
   };
 
   const accept_request_api = () => {
@@ -31,8 +54,32 @@ const SearchResultScreen = props => {
     return;
   };
 
-  const cancel_request_api = () => {
-    return;
+  const cancel_request_api = cid => {
+    AsyncStorage.getItem('@token')
+      .then(token => {
+        fetch(base_url + '/connection/cancel', {
+          method: 'DELETE',
+          headers: {'Content-Type': 'application/json', Authorization: token},
+          body: JSON.stringify({cid}),
+        })
+          .then(res => {
+            if (res.status === 200) {
+              setReload(!reload);
+            } else if (res.status === 401) {
+              alert('Unauthorized User! Please login now.');
+              props.navigation.navigate('auth');
+            } else {
+              props.navigation.navigate('warning', {status: 3});
+            }
+          })
+          .catch(error => {
+            props.navigation.navigate('warning', {status: 3});
+          });
+      })
+      .catch(error => {
+        alert('Unauthorized User! Please login now.');
+        props.navigation.navigate('auth');
+      });
   };
 
   React.useEffect(() => {
@@ -65,6 +112,7 @@ const SearchResultScreen = props => {
                           body={data.email}
                           button1="Profile"
                           button2="Request"
+                          onPress2={() => send_request_api(data.uid)}
                         />
                       );
                     } else if (data.status === '1') {
@@ -73,9 +121,10 @@ const SearchResultScreen = props => {
                           key={'srch-rslt-btn-crd-' + index}
                           image={data.image}
                           title={data.name}
-                          body="Connection requested sended"
+                          body="Connection requested send"
                           button1="Profile"
                           button2="Cancel"
+                          onPress2={() => cancel_request_api(data.cid)}
                         />
                       );
                     } else if (data.status === '2') {
@@ -84,7 +133,7 @@ const SearchResultScreen = props => {
                           key={'srch-rslt-btn-crd-' + index}
                           image={data.image}
                           title={data.name}
-                          body="Sended you connection request"
+                          body="Has send you connection request"
                           button1="Accept"
                           button2="Reject"
                         />
@@ -131,7 +180,7 @@ const SearchResultScreen = props => {
       .catch(error => {
         props.navigation.navigate('auth');
       });
-  }, []);
+  }, [reload]);
 
   return (
     <>

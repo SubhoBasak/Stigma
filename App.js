@@ -19,6 +19,7 @@ import EditProfileScreen from './src/screens/EditProfileScreen.js';
 import ZoomScreen from './src/screens/ZoomScreen';
 import SplashScreen from './src/screens/SplashScreen';
 import CommentScreen from './src/screens/CommentScreen';
+import MessageScreen from './src/screens/MessageScreen';
 
 const StackNav = createStackNavigator();
 
@@ -81,6 +82,7 @@ const App = () => {
             component={CommentScreen}
             options={{headerShown: true, headerTitle: 'Comment'}}
           />
+          <StackNav.Screen name="message" component={MessageScreen} />
         </StackNav.Navigator>
       </NavigationContainer>
     </SafeAreaView>
