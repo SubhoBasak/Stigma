@@ -1,5 +1,5 @@
 import React from 'react';
-import {ScrollView} from 'react-native';
+import {ScrollView, RefreshControl} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {base_url} from '../../conf.js';
 
@@ -46,12 +46,101 @@ const SearchResultScreen = props => {
       });
   };
 
-  const accept_request_api = () => {
-    return;
+  const accept_api = cid => {
+    AsyncStorage.getItem('@token')
+      .then(token => {
+        fetch(base_url + '/connection/accept', {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json', Authorization: token},
+          body: JSON.stringify({cid}),
+        })
+          .then(res => {
+            setLoading(false);
+            if (res.status === 200) {
+              setReload(!reload);
+            } else if (res.status === 401) {
+              alert('Unauthorized User! Please login now.');
+              props.navigation.navigate('auth');
+            } else if (res.status === 404) {
+              alert('User does not send you friend request!');
+            } else {
+              props.navigation.navigate('warning', {status: 3});
+            }
+          })
+          .catch(error => {
+            setLoading(false);
+            props.navigation.navigate('warning', {status: 3});
+          });
+        setLoading(true);
+      })
+      .catch(error => {
+        alert('Unauthorized User! Please login now.');
+        props.navigation.navigate('auth');
+      });
   };
 
-  const reject_request_api = () => {
-    return;
+  const reject_api = cid => {
+    AsyncStorage.getItem('@token')
+      .then(token => {
+        fetch(base_url + '/connection/reject', {
+          method: 'DELETE',
+          headers: {'Content-Type': 'application/json', Authorization: token},
+          body: JSON.stringify({cid}),
+        })
+          .then(res => {
+            setLoading(false);
+            if (res.status === 200) {
+              setReload(!reload);
+            } else if (res.status === 404) {
+              alert('User does not send you friend request!');
+            } else if (res.status === 401) {
+              alert('Unauthorized User! Please login now.');
+              props.navigation.navigate('auth');
+            } else {
+              props.navigation.navigate('warning', {status: 3});
+            }
+          })
+          .catch(error => {
+            setLoading(false);
+            props.navigation.navigate('warning', {status: 3});
+          });
+        setLoading(true);
+      })
+      .catch(error => {
+        alert('Unauthorized User! Please login now.');
+        props.navigation.navigate('auth');
+      });
+  };
+
+  const block_api = user => {
+    AsyncStorage.getItem('@token')
+      .then(token => {
+        fetch(base_url + '/connection/block', {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json', Authorization: token},
+          body: JSON.stringify({user}),
+        })
+          .then(res => {
+            if (res.status === 200) {
+              setReload(!reload);
+            } else if (res.status === 401) {
+              alert('Unauthorized User! Please login now.');
+              AsyncStorage.clear();
+              props.navigation.navigate('auth');
+            } else if (res.status === 405) {
+              alert('Not allowed!');
+            } else {
+              props.navigation.navigate('warning', {status: 3});
+            }
+          })
+          .catch(error => {
+            props.navigation.navigate('warning', {status: 3});
+          });
+      })
+      .catch(error => {
+        alert('Unauthorized User! Please login now.');
+        props.navigation.navigate('auth');
+      });
   };
 
   const cancel_request_api = cid => {
@@ -107,11 +196,16 @@ const SearchResultScreen = props => {
                       return (
                         <ButtonCard
                           key={'srch-rslt-btn-crd-' + index}
-                          image={data.image}
+                          image={
+                            data.image
+                              ? base_url + '/profile/' + data.uid + '.jpg'
+                              : null
+                          }
                           title={data.name}
                           body={data.email}
-                          button1="Profile"
+                          button1="Block"
                           button2="Request"
+                          onPress1={() => block_api(data.uid)}
                           onPress2={() => send_request_api(data.uid)}
                         />
                       );
@@ -119,34 +213,49 @@ const SearchResultScreen = props => {
                       return (
                         <ButtonCard
                           key={'srch-rslt-btn-crd-' + index}
-                          image={data.image}
+                          image={
+                            data.image
+                              ? base_url + '/profile/' + data.uid + '.jpg'
+                              : null
+                          }
                           title={data.name}
                           body="Connection requested send"
-                          button1="Profile"
-                          button2="Cancel"
-                          onPress2={() => cancel_request_api(data.cid)}
+                          button1="Cancel"
+                          onPress1={() => cancel_request_api(data.cid)}
                         />
                       );
                     } else if (data.status === '2') {
                       return (
                         <ButtonCard
                           key={'srch-rslt-btn-crd-' + index}
-                          image={data.image}
+                          image={
+                            data.image
+                              ? base_url + '/profile/' + data.uid + '.jpg'
+                              : null
+                          }
                           title={data.name}
                           body="Has send you connection request"
                           button1="Accept"
                           button2="Reject"
+                          onPress1={accept_api}
+                          onPress2={reject_api}
                         />
                       );
                     } else if (data.status === '3') {
                       return (
                         <ButtonCard
                           key={'srch-rslt-btn-crd-' + index}
-                          image={data.image}
+                          image={
+                            data.image
+                              ? base_url + '/profile/' + data.uid + '.jpg'
+                              : null
+                          }
                           title={data.name}
                           body={data.email}
                           button1="Profile"
                           button2="Message"
+                          onPress1={() => props.navigation.navigate('profile')}
+                          onPress2={() => props.navigation.navigate('message')}
                         />
                       );
                     }
@@ -189,7 +298,13 @@ const SearchResultScreen = props => {
           width: '100%',
           height: '100%',
           backgroundColor: COLORS.white,
-        }}>
+        }}
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={() => setReload(!reload)}
+          />
+        }>
         {users}
       </ScrollView>
       <LoadingIndicator show={loading} />

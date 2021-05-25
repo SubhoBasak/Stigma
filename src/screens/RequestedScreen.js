@@ -68,7 +68,11 @@ const Requested = props => {
                   return (
                     <ButtonCard
                       key={'requestd-card-' + index}
-                      image={data.image}
+                      image={
+                        data.image
+                          ? base_url + '/profile/' + data.uid + '.jpg'
+                          : null
+                      }
                       title={data.name}
                       body={data.email}
                       button1="Cancel"

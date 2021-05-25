@@ -69,7 +69,11 @@ const Connected = props => {
                   return (
                     <ButtonCard
                       key={'info-card-' + index}
-                      image={data.image}
+                      image={
+                        data.image
+                          ? base_url + '/profile/' + data.uid + '.jpg'
+                          : null
+                      }
                       title={data.name}
                       body={data.email}
                       button1="Message"

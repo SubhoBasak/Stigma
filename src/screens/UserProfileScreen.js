@@ -117,7 +117,7 @@ const UserProfileScreen = props => {
             style={style.cover}
             source={
               cover
-                ? {uri: base_url + '/cover/' + uid + '.jpg'}
+                ? {uri: base_url + '/cover/' + uid + '.jpg?' + new Date()}
                 : require('../Assets/Images/cover.jpg')
             }
           />
@@ -128,7 +128,7 @@ const UserProfileScreen = props => {
                 style={style.profile}
                 source={
                   image
-                    ? {uri: base_url + '/profile/' + uid + '.jpg'}
+                    ? {uri: base_url + '/profile/' + uid + '.jpg?' + new Date()}
                     : require('../Assets/Images/photo.png')
                 }
               />

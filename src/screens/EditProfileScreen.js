@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  RefreshControl,
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -17,7 +18,6 @@ import {COLORS} from '../constants';
 import InputBox from '../components/InputBox.js';
 import PushButton from '../components/PushButton.js';
 import LoadingIndicator from '../components/LoadingIndicator.js';
-import {add, set} from 'react-native-reanimated';
 
 const EditScreen = props => {
   const [loading, setLoading] = React.useState(true);
@@ -27,6 +27,7 @@ const EditScreen = props => {
   const [bio, setBio] = React.useState('');
   const [address, setAddress] = React.useState('');
   const [uid, setUid] = React.useState(null);
+  const [reload, setReload] = React.useState(false);
 
   const change_profile_pic = () => {
     ImagePicker.openPicker({
@@ -36,7 +37,48 @@ const EditScreen = props => {
       borderRadius: 150,
     })
       .then(image => {
-        setImage(image.path);
+        AsyncStorage.getItem('@token')
+          .then(token => {
+            var form = new FormData();
+            form.append('image', {
+              uri: image.path,
+              name: 'photo.jpg',
+              type: image.mime,
+            });
+
+            fetch(base_url + '/profile', {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: token,
+              },
+              body: form,
+            })
+              .then(res => {
+                setLoading(false);
+                if (res.status === 200) {
+                  setImage(true);
+                  setReload(!reload);
+                } else if (res.status === 401) {
+                  alert('Unauthorized User! Please login now.');
+                  AsyncStorage.clear();
+                  props.navigation.navigate('auth');
+                } else if (res.status === 404) {
+                  alert('User not found!');
+                } else {
+                  props.navigation.navigate('warning', {status: 3});
+                }
+              })
+              .catch(error => {
+                setLoading(false);
+                props.navigation.navigate('warning', {status: 3});
+              });
+            setLoading(true);
+          })
+          .catch(error => {
+            alert('Unauthorized User! Please login now.');
+            props.navigation.navigate('auth');
+          });
       })
       .catch(error => {});
   };
@@ -48,7 +90,48 @@ const EditScreen = props => {
       cropping: true,
     })
       .then(image => {
-        setCover(image.path);
+        AsyncStorage.getItem('@token')
+          .then(token => {
+            var form = new FormData();
+            form.append('cover', {
+              uri: image.path,
+              name: 'photo.jpg',
+              type: image.mime,
+            });
+
+            fetch(base_url + '/profile', {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: token,
+              },
+              body: form,
+            })
+              .then(res => {
+                setLoading(false);
+                if (res.status === 200) {
+                  setCover(true);
+                  setReload(!reload);
+                } else if (res.status === 401) {
+                  alert('Unauthorized User! Please login now.');
+                  AsyncStorage.clear();
+                  props.navigation.navigate('auth');
+                } else if (res.status === 404) {
+                  alert('User not found!');
+                } else {
+                  props.navigation.navigate('warning', {status: 3});
+                }
+              })
+              .catch(error => {
+                setLoading(false);
+                props.navigation.navigate('warning', {status: 3});
+              });
+            setLoading(true);
+          })
+          .catch(error => {
+            alert('Unauthorized User! Please login now.');
+            props.navigation.navigate('auth');
+          });
       })
       .catch(error => {});
   };
@@ -120,19 +203,25 @@ const EditScreen = props => {
         alert('Unauthorized user! Please login now.');
         props.navigation.navigate('auth');
       });
-  }, []);
+  }, [reload]);
 
   return (
     <>
       <ScrollView
-        style={{width: '100%', height: '100%', backgroundColor: COLORS.white}}>
+        style={{width: '100%', height: '100%', backgroundColor: COLORS.white}}
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={() => setReload(!reload)}
+          />
+        }>
         <View style={style.canvas}>
           <TouchableOpacity style={style.cover} onPress={change_cover_pic}>
             <Image
               style={style.cover}
               source={
                 cover
-                  ? {uri: base_url + '/cover/' + uid + '.jpg'}
+                  ? {uri: base_url + '/cover/' + uid + '.jpg?' + new Date()}
                   : require('../Assets/Images/cover.jpg')
               }
             />
@@ -143,7 +232,7 @@ const EditScreen = props => {
                 style={style.profile}
                 source={
                   image
-                    ? {uri: base_url + '/profile/' + uid + '.jpg'}
+                    ? {uri: base_url + '/profile/' + uid + '.jpg?' + new Date()}
                     : require('../Assets/Images/photo.png')
                 }
               />
