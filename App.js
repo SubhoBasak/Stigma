@@ -20,6 +20,7 @@ import ZoomScreen from './src/screens/ZoomScreen';
 import SplashScreen from './src/screens/SplashScreen';
 import CommentScreen from './src/screens/CommentScreen';
 import MessageScreen from './src/screens/MessageScreen';
+import NewPostScreen from './src/screens/NewPostScreen';
 
 const StackNav = createStackNavigator();
 
@@ -83,6 +84,11 @@ const App = () => {
             options={{headerShown: true, headerTitle: 'Comment'}}
           />
           <StackNav.Screen name="message" component={MessageScreen} />
+          <StackNav.Screen
+            name="post"
+            component={NewPostScreen}
+            options={{headerShown: true, headerTitle: 'Post'}}
+          />
         </StackNav.Navigator>
       </NavigationContainer>
     </SafeAreaView>

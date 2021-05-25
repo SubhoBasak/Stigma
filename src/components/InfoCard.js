@@ -24,7 +24,7 @@ const InfoCard = props => {
           style={style.image}
           source={
             props.image
-              ? {uri: props.image}
+              ? {uri: props.image + '?' + new Date()}
               : require('../Assets/Images/photo.png')
           }
         />
