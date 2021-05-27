@@ -254,7 +254,11 @@ const SearchResultScreen = props => {
                           body={data.email}
                           button1="Profile"
                           button2="Message"
-                          onPress1={() => props.navigation.navigate('profile')}
+                          onPress1={() =>
+                            props.navigation.navigate('profile', {
+                              uid: data.uid,
+                            })
+                          }
                           onPress2={() => props.navigation.navigate('message')}
                         />
                       );

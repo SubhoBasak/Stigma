@@ -6,13 +6,19 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {COLORS, FONTS} from '../constants';
 
 const SplashScreen = props => {
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
 
-  React.useState(async () => {
-    const token = await AsyncStorage.getItem('@token');
-    if (token) props.navigation.navigate('main');
-    else props.navigation.navigate('auth');
-    setLoading(false);
+  React.useEffect(() => {
+    AsyncStorage.getItem('@token')
+      .then(token => {
+        props.navigation.navigate('main');
+        setLoading(false);
+      })
+      .catch(error => {
+        props.navigation.navigate('auth');
+        setLoading(false);
+      });
+    setLoading(true);
   }, []);
 
   return (
@@ -28,8 +34,14 @@ const SplashScreen = props => {
         </View>
         <View style={style.bottom_section}>
           <View style={style.bottom_view}>
-            <ActivityIndicator size="large" color={COLORS.white} />
-            <Text style={style.text}>Subho Basak</Text>
+            {loading ? (
+              <ActivityIndicator size="large" color={COLORS.white} />
+            ) : null}
+            <Text style={style.header}>Stigma</Text>
+            <View style={style.footer}>
+              <Text style={style.text}>made by Subho Basak</Text>
+              <Text style={style.info}>subhobasak50@gmail.com</Text>
+            </View>
           </View>
         </View>
       </View>
@@ -75,10 +87,26 @@ const style = StyleSheet.create({
     width: 128,
     height: 128,
   },
+  header: {
+    fontFamily: FONTS.font_medium,
+    fontSize: 32,
+    color: COLORS.white,
+  },
+  footer: {
+    display: 'flex',
+    justifyContent: 'center',
+  },
   text: {
     fontFamily: FONTS.font_regular,
     fontSize: 18,
     color: COLORS.white,
+    textAlign: 'center',
+  },
+  info: {
+    fontFamily: FONTS.font_light,
+    fontSize: 14,
+    color: COLORS.white,
+    textAlign: 'center',
   },
 });
 

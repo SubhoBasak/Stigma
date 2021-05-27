@@ -18,7 +18,6 @@ import IconAD from 'react-native-vector-icons/AntDesign';
 
 // constants
 import {COLORS, FONTS} from '../constants';
-import PostCard from '../components/PostCard';
 import BottomLine from '../components/BottomLine';
 
 // components
@@ -36,44 +35,15 @@ const UserProfileScreen = props => {
   const [bio, setBio] = React.useState('');
   const [uid, setUid] = React.useState(null);
 
-  const all_post = [
-    <PostCard
-      key="post-card-0"
-      profile="https://picsum.photos/128"
-      image="https://picsum.photos/320/240"
-      user="User Name"
-      caps="This is a long long long post caption for testing purpose only. This is a long long long post caption for testing purpose only. This is a long long long post caption for testing purpose only. This is a long long long post caption for testing purpose only."
-      love="15K"
-      comment="1K"
-      share="100"
-      loved={true}
-    />,
-    <PostCard
-      key="post-card-1"
-      profile="https://picsum.photos/128"
-      image="https://picsum.photos/320/240"
-      user="User Name"
-      caps="This is a long long long post caption for testing purpose only."
-      love="15K"
-      comment="1K"
-      share="100"
-    />,
-    <PostCard
-      key="post-card-2"
-      profile="https://picsum.photos/128"
-      image="https://picsum.photos/320/240"
-      user="User Name"
-      caps="This is a long long long post caption for testing purpose only."
-      love="15K"
-      comment="1K"
-      share="100"
-    />,
-  ];
-
   React.useEffect(() => {
     AsyncStorage.getItem('@token')
       .then(token => {
-        fetch(base_url + '/profile', {
+        var tmp_url = '/profile';
+        if (props.route.params) {
+          tmp_url +=
+            '/view?' + new URLSearchParams({uid: props.route.params.uid});
+        }
+        fetch(base_url + tmp_url, {
           headers: {'Content-Type': 'application/json', Authorization: token},
         }).then(res => {
           setLoading(false);
@@ -96,7 +66,16 @@ const UserProfileScreen = props => {
             AsyncStorage.clear();
             alert('Unauthorized user! Please login now.');
             props.navigation.navigate('auth');
+          } else if (res.status === 404) {
+            alert('User not found!');
+            props.navigation.goBack();
+          } else if (res.status === 405) {
+            alert('Your are allowed for this!');
+            props.navigation.goBack();
           } else {
+            alert('Unauthorized User! Please login now.');
+            AsyncStorage.clear();
+            props.navigation.navigate('auth');
           }
         });
       })
@@ -160,7 +139,7 @@ const UserProfileScreen = props => {
             </TouchableOpacity>
           </View>
           <BottomLine />
-          <View style={{marginTop: 20}}>{all_post}</View>
+          <View style={{marginTop: 20}}></View>
         </View>
       </ScrollView>
       <LoadingIndicator show={loading} />

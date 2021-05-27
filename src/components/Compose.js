@@ -29,6 +29,7 @@ const Compose = props => {
           style={style.input}
           onChangeText={props.onChangeText}
           placeholder={props.placeholder}
+          multiline={true}
         />
         <TouchableOpacity>
           <IconSLI
@@ -44,7 +45,9 @@ const Compose = props => {
 const style = StyleSheet.create({
   container: {
     width: '100%',
-    height: 64,
+    height: 'auto',
+    minHeight: 64,
+    maxHeight: 192,
     backgroundColor: COLORS.white,
     display: 'flex',
     justifyContent: 'center',
@@ -60,7 +63,9 @@ const style = StyleSheet.create({
   },
   wrapper: {
     width: '95%',
-    height: 42,
+    height: 'auto',
+    minHeight: 42,
+    maxHeight: 126,
     maxWidth: '95%',
     display: 'flex',
     flexDirection: 'row',
@@ -86,6 +91,9 @@ const style = StyleSheet.create({
     color: COLORS.gray_2,
     width: width,
     maxWidth: width,
+    height: 'auto',
+    minHeight: 42,
+    maxHeight: 126,
   },
 });
 

@@ -80,7 +80,9 @@ const Connected = props => {
                       button2="Remove"
                       onPress1={() => props.navigation.navigate('message')}
                       onPress2={() => remove_api(data.cid)}
-                      card_press={() => props.navigation.navigate('profile')}
+                      card_press={() =>
+                        props.navigation.navigate('profile', {uid: data.uid})
+                      }
                     />
                   );
                 }),
