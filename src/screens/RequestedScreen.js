@@ -1,6 +1,6 @@
 import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {ScrollView, View, RefreshControl} from 'react-native';
+import {RefreshControl, FlatList, SafeAreaView, Alert} from 'react-native';
 import {base_url} from '../../conf.js';
 
 // constants
@@ -25,7 +25,7 @@ const Requested = props => {
         })
           .then(res => {
             if (res.status === 200) {
-              return setReload(!reload);
+              return setAllUsers(allUsers.filter(item => item.cid !== cid));
             } else if (res.status === 404) {
               props.navigation.goBack();
               return props.navigation.navigate('warning', {status: 0});
@@ -45,80 +45,77 @@ const Requested = props => {
       });
   };
 
-  React.useEffect(async () => {
-    const token = await AsyncStorage.getItem('@token');
+  const cancel_warning = cid => {
+    Alert.alert('Cancel', 'Do you really want to cancel connection request?', [
+      {text: 'Yes', onPress: () => cancel_request(cid)},
+      {text: 'No', onPress: () => {}},
+    ]);
+  };
 
-    if (!token) {
-      alert('Please login again.');
-      return props.navigation.navigate('auth');
-    }
+  const ButtonCardWrapper = ({item}) => {
+    return (
+      <ButtonCard
+        title={item.name}
+        body={item.email}
+        image={item.image ? base_url + '/profile/' + item.uid + '.jpg' : null}
+        button1="Cancel"
+        onPress1={() => cancel_warning(item.cid)}
+      />
+    );
+  };
 
-    fetch(base_url + '/connection/requested', {
-      method: 'GET',
-      headers: {'Content-Type': 'application/json', Authorization: token},
-    })
-      .then(res => {
-        setLoading(false);
-        if (res.status === 200) {
-          res
-            .json()
-            .then(json => {
-              setAllUsers(
-                json.map((data, index) => {
-                  return (
-                    <ButtonCard
-                      key={'requestd-card-' + index}
-                      image={
-                        data.image
-                          ? base_url + '/profile/' + data.uid + '.jpg'
-                          : null
-                      }
-                      title={data.name}
-                      body={data.email}
-                      button1="Cancel"
-                      onPress1={() => cancel_request(data.cid)}
-                    />
-                  );
-                }),
-              );
-            })
-            .catch(error => {
-              props.navigation.goBack();
-              return props.navigation.navigate('warning', {status: 3});
-            });
-        } else if (res.status === 401) {
-          alert('Unauthorized user! Please login now.');
-          props.navigation.navigate('auth');
-        } else {
-          alert(
-            "Server Error!\nCouldn't get requested users. Please try again later.",
-          );
-        }
+  React.useEffect(() => {
+    AsyncStorage.getItem('@token')
+      .then(token => {
+        fetch(base_url + '/connection/requested', {
+          method: 'GET',
+          headers: {'Content-Type': 'application/json', Authorization: token},
+        })
+          .then(res => {
+            setLoading(false);
+            if (res.status === 200) {
+              res
+                .json()
+                .then(json => setAllUsers(json))
+                .catch(() => {
+                  props.navigation.goBack();
+                  return props.navigation.navigate('warning', {status: 3});
+                });
+            } else if (res.status === 401) {
+              alert('Unauthorized user! Please login now.');
+              AsyncStorage.clear();
+              return props.navigation.navigate('auth');
+            } else {
+              return props.navigation.navigate('warning', {status: 1});
+            }
+          })
+          .catch(() => {
+            setLoading(false);
+            props.navigation.goBack();
+            return props.navigation.navigate('warning', {status: 3});
+          });
       })
       .catch(error => {
-        setLoading(false);
-        props.navigation.goBack();
-        return props.navigation.navigate('warning', {status: 3});
+        alert('Unauthorized user! Please login now.');
+        return props.navigation.navigate('auth');
       });
   }, [reload]);
 
   return (
-    <>
-      <ScrollView
-        style={{height: '100%', backgroundColor: COLORS.white}}
+    <SafeAreaView style={{backgroundColor: COLORS.white}}>
+      <FlatList
+        data={allUsers}
+        renderItem={ButtonCardWrapper}
+        keyExtractor={item => item.uid}
+        ListHeaderComponent={<SearchBar />}
         refreshControl={
           <RefreshControl
             refreshing={loading && reload}
             onRefresh={() => setReload(!reload)}
           />
-        }>
-        <View style={{height: '100%'}}>
-          <SearchBar />
-          {allUsers}
-          <View style={{height: 500}} />
-        </View>
-      </ScrollView>
-    </>
+        }
+      />
+    </SafeAreaView>
   );
 };
 
