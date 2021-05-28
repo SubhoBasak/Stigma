@@ -1,12 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
-import {ScrollView, View, RefreshControl, Alert} from 'react-native';
+import {RefreshControl, Alert, SafeAreaView, FlatList} from 'react-native';
 import {base_url} from '../../conf';
+
+// constants
+import {COLORS} from '../constants';
 
 // components
 import ButtonCard from '../components/ButtonCard.js';
 import SearchBar from '../components/SearchBar.js';
-import {COLORS} from '../constants';
 
 const Connected = props => {
   const [loading, setLoading] = React.useState(false);
@@ -24,7 +26,7 @@ const Connected = props => {
           .then(res => {
             setLoading(false);
             if (res.status === 200) {
-              setReload(!reload);
+              setAllUsers(allUsers.filter(item => item.cid !== cid));
             } else if (res.status === 404) {
               alert('Connection not found!');
             } else if (res.status === 401) {
@@ -57,6 +59,20 @@ const Connected = props => {
     ]);
   };
 
+  const ButtonCardWrapper = ({item}) => {
+    return (
+      <ButtonCard
+        title={item.name}
+        image={item.image ? base_url + '/profile/' + item.uid + '.jpg' : null}
+        body={item.email}
+        button1="Remove"
+        button2="Message"
+        onPress1={() => remove_warning(item.cid)}
+        onPress2={() => props.navigation.navigate('message', {uid: item.uid})}
+      />
+    );
+  };
+
   React.useEffect(async () => {
     const token = await AsyncStorage.getItem('@token');
 
@@ -73,39 +89,15 @@ const Connected = props => {
         if (res.status === 200) {
           res
             .json()
-            .then(json => {
-              setAllUsers(
-                json.map((data, index) => {
-                  return (
-                    <ButtonCard
-                      key={'info-card-' + index}
-                      image={
-                        data.image
-                          ? base_url + '/profile/' + data.uid + '.jpg'
-                          : null
-                      }
-                      title={data.name}
-                      body={data.email}
-                      button1="Message"
-                      button2="Remove"
-                      onPress1={() => props.navigation.navigate('message')}
-                      onPress2={() => remove_warning(data.cid)}
-                      card_press={() =>
-                        props.navigation.navigate('profile', {uid: data.uid})
-                      }
-                    />
-                  );
-                }),
-              );
-            })
+            .then(json => setAllUsers(json))
             .catch(error => {
               props.navigation.goBack();
               return props.navigation.navigate('warning', {status: 3});
             });
         } else if (res.status === 401) {
           alert('You are unauthorized to access this page! Please login now.');
-          props.navigation.navigate('auth');
-          return;
+          AsyncStorage.clear();
+          return props.navigation.navigate('auth');
         } else if (res.status === 500) {
           props.navigation.goBack();
           return props.navigation.navigate('warning', {status: 1});
@@ -121,18 +113,20 @@ const Connected = props => {
   }, [reload]);
 
   return (
-    <ScrollView
-      style={{height: '100%', backgroundColor: COLORS.white}}
-      refreshControl={
-        <RefreshControl
-          refreshing={loading}
-          onRefresh={() => setReload(!reload)}
-        />
-      }>
-      <SearchBar />
-      {allUsers}
-      <View style={{height: 500}} />
-    </ScrollView>
+    <SafeAreaView style={{backgroundColor: COLORS.white}}>
+      <FlatList
+        data={allUsers}
+        renderItem={ButtonCardWrapper}
+        keyExtractor={item => item.uid}
+        ListHeaderComponent={<SearchBar />}
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={() => setReload(!reload)}
+          />
+        }
+      />
+    </SafeAreaView>
   );
 };
 
