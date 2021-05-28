@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
-import {ScrollView, View, RefreshControl} from 'react-native';
+import {ScrollView, View, RefreshControl, Alert} from 'react-native';
 import {base_url} from '../../conf';
 
 // components
@@ -47,6 +47,16 @@ const Connected = props => {
       });
   };
 
+  const remove_warning = cid => {
+    Alert.alert('Remove', 'Do you really want to remove the connection?', [
+      {
+        text: 'Yes',
+        onPress: () => remove_api(cid),
+      },
+      {text: 'No', onPress: () => {}},
+    ]);
+  };
+
   React.useEffect(async () => {
     const token = await AsyncStorage.getItem('@token');
 
@@ -79,7 +89,7 @@ const Connected = props => {
                       button1="Message"
                       button2="Remove"
                       onPress1={() => props.navigation.navigate('message')}
-                      onPress2={() => remove_api(data.cid)}
+                      onPress2={() => remove_warning(data.cid)}
                       card_press={() =>
                         props.navigation.navigate('profile', {uid: data.uid})
                       }

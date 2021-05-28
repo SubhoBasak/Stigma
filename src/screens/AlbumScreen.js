@@ -13,18 +13,6 @@ const AlbumScreen = props => {
       title="Album Name"
       card_press={() => props.navigation.navigate('photos')}
     />,
-    <InfoCard
-      key="album-1"
-      image="https://picsum.photos/128"
-      title="Album Name"
-      card_press={() => props.navigation.navigate('photos')}
-    />,
-    <InfoCard
-      key="album-2"
-      image="https://picsum.photos/128"
-      title="Album Name"
-      card_press={() => props.navigation.navigate('photos')}
-    />,
   ];
 
   return (

@@ -1,6 +1,7 @@
 import React from 'react';
 import {Image, StyleSheet, TouchableOpacity, View, Text} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import {base_url} from '../../conf.js';
 
 // icons
 import IconFA from 'react-native-vector-icons/FontAwesome';
@@ -19,13 +20,18 @@ const PostCard = props => {
   return (
     <View style={{marginBottom: 20}}>
       <InfoCard
-        image={props.profile}
+        image={
+          props.profile ? base_url + '/profile/' + props.uid + '.jpg' : null
+        }
         title={props.user}
         body={props.caps}
         card_press={() => navigation.navigate('comment')}
       />
       <View>
-        <Image style={style.image} source={{uri: props.image}} />
+        <Image
+          style={style.image}
+          source={{uri: base_url + '/post/' + props.image + '.jpg'}}
+        />
       </View>
       <View
         style={{
@@ -37,18 +43,14 @@ const PostCard = props => {
           marginTop: 5,
         }}>
         <TouchableOpacity style={style.button}>
-          <IconFA
-            name={props.loved ? 'heart' : 'heart-o'}
-            size={24}
-            color={props.loved ? '#dd4020' : COLORS.slate_1}
-          />
+          <IconFA name="heart-o" size={24} color="#dd4020" />
           <Text style={style.button_text}>{props.love}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={style.button}
           onPress={() => navigation.navigate('comment')}>
           <IconOC name="comment" size={24} color={COLORS.slate_1} />
-          <Text style={style.button_text}>{props.comment}</Text>
+          <View />
         </TouchableOpacity>
         <TouchableOpacity style={style.button}>
           <IconIO
