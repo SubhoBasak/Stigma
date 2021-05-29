@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
-import {ScrollView, View, RefreshControl} from 'react-native';
+import {Alert, FlatList, RefreshControl, SafeAreaView} from 'react-native';
 import {base_url} from '../../conf.js';
 
 // components
@@ -8,7 +8,7 @@ import ButtonCard from '../components/ButtonCard.js';
 import SearchBar from '../components/SearchBar.js';
 import {COLORS} from '../constants/index.js';
 
-const Requests = props => {
+const RequestsScreen = props => {
   const [loading, setLoading] = React.useState(true);
   const [allUsers, setAllUsers] = React.useState([]);
   const [reload, setReload] = React.useState(false);
@@ -24,14 +24,16 @@ const Requests = props => {
           .then(res => {
             setLoading(false);
             if (res.status === 200) {
-              setReload(!reload);
+              setAllUsers(allUsers.filter(item => item.cid !== cid));
             } else if (res.status === 401) {
               alert('Unauthorized User! Please login now.');
+              AsyncStorage.clear();
               props.navigation.navigate('auth');
             } else if (res.status === 404) {
               alert('User does not send you friend request!');
+              setAllUsers(allUsers.filter(item => item.cid !== cid));
             } else {
-              props.navigation.navigate('warning', {status: 3});
+              props.navigation.navigate('warning', {status: 1});
             }
           })
           .catch(error => {
@@ -57,11 +59,13 @@ const Requests = props => {
           .then(res => {
             setLoading(false);
             if (res.status === 200) {
-              setReload(!reload);
+              setAllUsers(allUsers.filter(item => item.cid !== cid));
             } else if (res.status === 404) {
               alert('User does not send you friend request!');
+              setAllUsers(allUsers.filter(item => item.cid !== cid));
             } else if (res.status === 401) {
               alert('Unauthorized User! Please login now.');
+              AsyncStorage.clear();
               props.navigation.navigate('auth');
             } else {
               props.navigation.navigate('warning', {status: 3});
@@ -79,6 +83,37 @@ const Requests = props => {
       });
   };
 
+  const reject_warning = cid => {
+    Alert.alert(
+      'Reject',
+      'Do you really want to reject the connection request',
+      [
+        {
+          text: 'Yes',
+          onPress: () => reject_api(cid),
+        },
+        {
+          text: 'No',
+          onPress: () => {},
+        },
+      ],
+    );
+  };
+
+  const ButtonCardWrapper = ({item}) => {
+    return (
+      <ButtonCard
+        title={item.name}
+        image={item.image ? base_url + '/profile/' + item.uid + '.jpg' : null}
+        body={item.email}
+        button1="Accept"
+        button2="Reject"
+        onPress1={() => accept_api(item.cid)}
+        onPress2={() => reject_warning(item.cid)}
+      />
+    );
+  };
+
   React.useEffect(() => {
     AsyncStorage.getItem('@token')
       .then(token => {
@@ -90,21 +125,7 @@ const Requests = props => {
             res
               .json()
               .then(json => {
-                setAllUsers(
-                  json.map((data, index) => {
-                    return (
-                      <ButtonCard
-                        key={'req-scr-btn-crd-' + index}
-                        title={data.name}
-                        body={data.email}
-                        button1="Accept"
-                        button2="Reject"
-                        onPress1={() => accept_api(data.cid)}
-                        onPress2={() => reject_api(data.cid)}
-                      />
-                    );
-                  }),
-                );
+                setAllUsers(json);
               })
               .catch(error => {
                 props.navigation.navigate('warning', {status: 3});
@@ -125,21 +146,21 @@ const Requests = props => {
   }, [reload]);
 
   return (
-    <ScrollView
-      style={{height: '100%', backgroundColor: COLORS.white}}
-      refreshControl={
-        <RefreshControl
-          refreshing={loading}
-          onRefresh={() => setReload(!reload)}
-        />
-      }>
-      <View style={{height: '100%', backgroundColor: COLORS.white}}>
-        <SearchBar />
-        {allUsers}
-        <View style={{height: 500}} />
-      </View>
-    </ScrollView>
+    <SafeAreaView style={{backgroundColor: COLORS.white}}>
+      <FlatList
+        data={allUsers}
+        renderItem={ButtonCardWrapper}
+        ListHeaderComponent={<SearchBar />}
+        keyExtractor={item => item.uid}
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={() => setReload(!reload)}
+          />
+        }
+      />
+    </SafeAreaView>
   );
 };
 
-export default Requests;
+export default RequestsScreen;

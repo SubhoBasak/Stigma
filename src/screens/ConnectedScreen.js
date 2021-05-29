@@ -69,6 +69,7 @@ const Connected = props => {
         button2="Message"
         onPress1={() => remove_warning(item.cid)}
         onPress2={() => props.navigation.navigate('message', {uid: item.uid})}
+        card_press={() => props.navigation.navigate('profile', {uid: item.uid})}
       />
     );
   };

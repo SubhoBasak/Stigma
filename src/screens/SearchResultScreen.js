@@ -1,5 +1,5 @@
 import React from 'react';
-import {ScrollView, RefreshControl} from 'react-native';
+import {RefreshControl, FlatList, SafeAreaView, Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {base_url} from '../../conf.js';
 
@@ -8,7 +8,6 @@ import {COLORS} from '../constants';
 
 // components
 import ButtonCard from '../components/ButtonCard.js';
-import LoadingIndicator from '../components/LoadingIndicator.js';
 
 const SearchResultScreen = props => {
   const [loading, setLoading] = React.useState(false);
@@ -26,21 +25,32 @@ const SearchResultScreen = props => {
           .then(res => {
             setLoading(false);
             if (res.status === 200) {
-              setReload(!reload);
+              res.json().then(json => {
+                setUsers(
+                  users.map(item => {
+                    if (item.uid === uid) {
+                      item.cid = json.cid;
+                      item.status = '1';
+                    }
+                    return item;
+                  }),
+                );
+              });
             } else if (res.status === 401) {
               alert('Unauthorized User! Please login now.');
+              AsyncStorage.clear();
               props.navigation.navigate('auth');
             } else {
-              props.navigation.navigate('warning', {status: 3});
+              props.navigation.navigate('warning', {status: 1});
             }
           })
-          .catch(error => {
+          .catch(() => {
             setLoading(false);
             props.navigation.navigate('warning', {status: 3});
           });
         setLoading(true);
       })
-      .catch(error => {
+      .catch(() => {
         alert('Unauthorized User! Please login now.');
         props.navigation.navigate('auth');
       });
@@ -57,23 +67,32 @@ const SearchResultScreen = props => {
           .then(res => {
             setLoading(false);
             if (res.status === 200) {
-              setReload(!reload);
+              setUsers(
+                users.map(item => {
+                  if (item.cid === cid) {
+                    item.status = '3';
+                  }
+                  return item;
+                }),
+              );
             } else if (res.status === 401) {
               alert('Unauthorized User! Please login now.');
+              AsyncStorage.clear();
               props.navigation.navigate('auth');
             } else if (res.status === 404) {
               alert('User does not send you friend request!');
+              setUsers(users.filter(item => item.cid !== cid));
             } else {
-              props.navigation.navigate('warning', {status: 3});
+              props.navigation.navigate('warning', {status: 1});
             }
           })
-          .catch(error => {
+          .catch(() => {
             setLoading(false);
             props.navigation.navigate('warning', {status: 3});
           });
         setLoading(true);
       })
-      .catch(error => {
+      .catch(() => {
         alert('Unauthorized User! Please login now.');
         props.navigation.navigate('auth');
       });
@@ -90,57 +109,107 @@ const SearchResultScreen = props => {
           .then(res => {
             setLoading(false);
             if (res.status === 200) {
-              setReload(!reload);
+              setUsers(
+                users.map(item => {
+                  if (item.cid === cid) {
+                    item.cid = null;
+                    item.status = '0';
+                  }
+                  return item;
+                }),
+              );
             } else if (res.status === 404) {
               alert('User does not send you friend request!');
+              if (res.status === 200) {
+                setUsers(
+                  users.map(item => {
+                    if (item.cid === cid) {
+                      item.status = '0';
+                    }
+                    return item;
+                  }),
+                );
+              }
             } else if (res.status === 401) {
               alert('Unauthorized User! Please login now.');
+              AsyncStorage.clear();
               props.navigation.navigate('auth');
             } else {
-              props.navigation.navigate('warning', {status: 3});
+              props.navigation.navigate('warning', {status: 1});
             }
           })
-          .catch(error => {
+          .catch(() => {
             setLoading(false);
             props.navigation.navigate('warning', {status: 3});
           });
         setLoading(true);
       })
-      .catch(error => {
+      .catch(() => {
         alert('Unauthorized User! Please login now.');
         props.navigation.navigate('auth');
       });
   };
 
-  const block_api = user => {
+  const reject_warning = cid => {
+    Alert.alert(
+      'Reject',
+      'Do you really want to reject the connection request',
+      [
+        {
+          text: 'Yes',
+          onPress: () => reject_api(cid),
+        },
+        {
+          text: 'No',
+          onPress: () => {},
+        },
+      ],
+    );
+  };
+
+  const block_api = uid => {
     AsyncStorage.getItem('@token')
       .then(token => {
         fetch(base_url + '/connection/block', {
           method: 'PUT',
           headers: {'Content-Type': 'application/json', Authorization: token},
-          body: JSON.stringify({user}),
+          body: JSON.stringify({uid}),
         })
           .then(res => {
             if (res.status === 200) {
-              setReload(!reload);
+              setUsers(users.filter(item => item.uid != uid));
             } else if (res.status === 401) {
               alert('Unauthorized User! Please login now.');
               AsyncStorage.clear();
               props.navigation.navigate('auth');
             } else if (res.status === 405) {
               alert('Not allowed!');
+              setUsers(users.filter(item => item.uid != uid));
             } else {
-              props.navigation.navigate('warning', {status: 3});
+              props.navigation.navigate('warning', {status: 1});
             }
           })
-          .catch(error => {
+          .catch(() => {
             props.navigation.navigate('warning', {status: 3});
           });
       })
-      .catch(error => {
+      .catch(() => {
         alert('Unauthorized User! Please login now.');
         props.navigation.navigate('auth');
       });
+  };
+
+  const block_warning = uid => {
+    Alert.alert('Block', 'Do you really want to block this person?', [
+      {
+        text: 'Yes',
+        onPress: () => block_api(uid),
+      },
+      {
+        text: 'No',
+        onPress: () => {},
+      },
+    ]);
   };
 
   const cancel_request_api = cid => {
@@ -153,22 +222,148 @@ const SearchResultScreen = props => {
         })
           .then(res => {
             if (res.status === 200) {
-              setReload(!reload);
+              setUsers(
+                users.map(item => {
+                  if (item.cid === cid) {
+                    item.cid = null;
+                    item.status = '0';
+                  }
+                  return item;
+                }),
+              );
             } else if (res.status === 401) {
               alert('Unauthorized User! Please login now.');
+              AsyncStorage.clear();
               props.navigation.navigate('auth');
+            } else if (res.status === 404) {
+              alert('User did not send you friend request.');
+              setUsers(
+                users.map(item => {
+                  if (item.cid === cid) {
+                    item.cid = null;
+                    item.status = '0';
+                  }
+                  return item;
+                }),
+              );
             } else {
-              props.navigation.navigate('warning', {status: 3});
+              props.navigation.navigate('warning', {status: 1});
             }
           })
-          .catch(error => {
+          .catch(() => {
             props.navigation.navigate('warning', {status: 3});
           });
       })
-      .catch(error => {
+      .catch(() => {
         alert('Unauthorized User! Please login now.');
         props.navigation.navigate('auth');
       });
+  };
+
+  const remove_api = cid => {
+    AsyncStorage.getItem('@token')
+      .then(token => {
+        fetch(base_url + '/connection/remove', {
+          method: 'DELETE',
+          headers: {'Content-Type': 'application/json', Authorization: token},
+          body: JSON.stringify({cid}),
+        })
+          .then(res => {
+            setLoading(false);
+            if (res.status === 200) {
+              setUsers(
+                users.map(item => {
+                  if (item.cid === cid) {
+                    item.cid = null;
+                    item.status = '0';
+                  }
+                  return item;
+                }),
+              );
+            } else if (res.status === 404) {
+              alert('Connection not found!');
+              setUsers(users.filter(item => item.cid !== cid));
+            } else if (res.status === 401) {
+              alert('Unauthorized User! Please login now.');
+              AsyncStorage.clear();
+              props.navigation.navigate('auth');
+            } else {
+              props.navigation.navigate('warning', {status: 1});
+            }
+          })
+          .catch(() => {
+            setLoading(false);
+            props.navigation.navigate('warning', {status: 3});
+          });
+        setLoading(true);
+      })
+      .catch(() => {
+        alert('Unauthorized User! Please login now.');
+        props.navigation.navigate('auth');
+      });
+  };
+
+  const remove_warning = cid => {
+    Alert.alert('Remove', 'Do you really want to remove the connection?', [
+      {
+        text: 'Yes',
+        onPress: () => remove_api(cid),
+      },
+      {text: 'No', onPress: () => {}},
+    ]);
+  };
+
+  const ButtonCardWrapper = ({item}) => {
+    if (item.status === '0') {
+      return (
+        <ButtonCard
+          title={item.name}
+          image={item.image ? base_url + '/profile/' + item.uid + '.jpg' : null}
+          body={item.email}
+          button1="Block"
+          button2="Request"
+          onPress1={() => block_warning(item.uid)}
+          onPress2={() => send_request_api(item.uid)}
+        />
+      );
+    } else if (item.status === '1') {
+      return (
+        <ButtonCard
+          title={item.name}
+          image={item.image ? base_url + '/profile/' + item.uid + '.jpg' : null}
+          body={item.email}
+          button1="Cancel"
+          onPress1={() => cancel_request_api(item.cid)}
+        />
+      );
+    } else if (item.status === '2') {
+      return (
+        <ButtonCard
+          title={item.name}
+          image={item.image ? base_url + '/profile/' + item.uid + '.jpg' : null}
+          body={item.email}
+          button1="Accept"
+          button2="Reject"
+          onPress1={() => accept_api(item.cid)}
+          onPress2={() => reject_warning(item.cid)}
+        />
+      );
+    } else if (item.status === '3') {
+      return (
+        <ButtonCard
+          title={item.name}
+          image={item.image ? base_url + '/profile/' + item.uid + '.jpg' : null}
+          body={item.email}
+          button1="Message"
+          button2="Remove"
+          onPress1={() => props.navigation.navigate('message', {uid: item.cid})}
+          onPress2={() => remove_warning(item.cid)}
+          card_press={() =>
+            props.navigation.navigate('profile', {uid: item.uid})
+          }
+        />
+      );
+    }
   };
 
   React.useEffect(() => {
@@ -190,129 +385,41 @@ const SearchResultScreen = props => {
             if (res.status === 200) {
               res
                 .json()
-                .then(json => {
-                  const tmp = json.map((data, index) => {
-                    if (data.status === '0') {
-                      return (
-                        <ButtonCard
-                          key={'srch-rslt-btn-crd-' + index}
-                          image={
-                            data.image
-                              ? base_url + '/profile/' + data.uid + '.jpg'
-                              : null
-                          }
-                          title={data.name}
-                          body={data.email}
-                          button1="Block"
-                          button2="Request"
-                          onPress1={() => block_api(data.uid)}
-                          onPress2={() => send_request_api(data.uid)}
-                        />
-                      );
-                    } else if (data.status === '1') {
-                      return (
-                        <ButtonCard
-                          key={'srch-rslt-btn-crd-' + index}
-                          image={
-                            data.image
-                              ? base_url + '/profile/' + data.uid + '.jpg'
-                              : null
-                          }
-                          title={data.name}
-                          body="Connection requested send"
-                          button1="Cancel"
-                          onPress1={() => cancel_request_api(data.cid)}
-                        />
-                      );
-                    } else if (data.status === '2') {
-                      return (
-                        <ButtonCard
-                          key={'srch-rslt-btn-crd-' + index}
-                          image={
-                            data.image
-                              ? base_url + '/profile/' + data.uid + '.jpg'
-                              : null
-                          }
-                          title={data.name}
-                          body="Has send you connection request"
-                          button1="Accept"
-                          button2="Reject"
-                          onPress1={accept_api}
-                          onPress2={reject_api}
-                        />
-                      );
-                    } else if (data.status === '3') {
-                      return (
-                        <ButtonCard
-                          key={'srch-rslt-btn-crd-' + index}
-                          image={
-                            data.image
-                              ? base_url + '/profile/' + data.uid + '.jpg'
-                              : null
-                          }
-                          title={data.name}
-                          body={data.email}
-                          button1="Profile"
-                          button2="Message"
-                          onPress1={() =>
-                            props.navigation.navigate('profile', {
-                              uid: data.uid,
-                            })
-                          }
-                          onPress2={() => props.navigation.navigate('message')}
-                        />
-                      );
-                    }
-                  });
-                  setLoading(false);
-                  if (tmp.length === 0) {
-                    props.navigation.goBack();
-                    return props.navigation.navigate('warning', {status: 0});
-                  } else {
-                    setUsers(tmp);
-                  }
-                })
-                .catch(error => {
-                  setLoading(false);
-                  props.navigation.goBack();
-                  return props.navigation.navigate('warning', {status: 3});
-                });
+                .then(json => setUsers(json))
+                .catch(() => props.navigation.navigate('warning', {status: 3}));
             } else if (res.status === 500) {
-              setLoading(false);
-              props.navigation.goBack();
               props.navigation.navigate('warning', {status: 1});
             }
-          })
-          .catch(error => {
             setLoading(false);
-            props.navigation.goBack();
+          })
+          .catch(() => {
+            setLoading(false);
             return props.navigation.navigate('warning', {status: 3});
           });
         setLoading(true);
       })
-      .catch(error => {
+      .catch(() => {
         props.navigation.navigate('auth');
       });
   }, [reload]);
 
   return (
-    <>
-      <ScrollView
-        style={{
-          width: '100%',
-          height: '100%',
-          backgroundColor: COLORS.white,
-        }}
+    <SafeAreaView
+      style={{
+        backgroundColor: COLORS.white,
+      }}>
+      <FlatList
+        data={users}
+        renderItem={ButtonCardWrapper}
+        keyExtractor={item => item.uid}
         refreshControl={
           <RefreshControl
             refreshing={loading}
             onRefresh={() => setReload(!reload)}
           />
-        }>
-        {users}
-      </ScrollView>
-      <LoadingIndicator show={loading} />
-    </>
+        }
+      />
+    </SafeAreaView>
   );
 };
 
