@@ -28,28 +28,72 @@ const HomeScreen = props => {
   const [allPost, setAllPost] = React.useState([]);
   const [reload, setReload] = React.useState(false);
 
-  const all_post = [
-    <PostCard
-      key="post-card-1"
-      profile="https://picsum.photos/128"
-      image="https://picsum.photos/320/240"
-      user="User Name"
-      caps="This is a long long long post caption for testing purpose only."
-      love="15K"
-      comment="1K"
-      share="100"
-    />,
-    <PostCard
-      key="post-card-2"
-      profile="https://picsum.photos/128"
-      image="https://picsum.photos/320/240"
-      user="User Name"
-      caps="This is a long long long post caption for testing purpose only."
-      love="15K"
-      comment="1K"
-      share="100"
-    />,
-  ];
+  const love_api = pid => {
+    AsyncStorage.getItem('@token')
+      .then(token => {
+        fetch(base_url + '/news_feed', {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json', Authorization: token},
+          body: JSON.stringify({pid}),
+        })
+          .then(res => {
+            if (res.status === 200) {
+              setAllPost(
+                allPost.map(data => {
+                  if (data.pid === pid) {
+                    if (data.loved) {
+                      data.loved = false;
+                      data.loves--;
+                    } else {
+                      data.loved = true;
+                      data.loves++;
+                    }
+                  }
+                  return data;
+                }),
+              );
+            } else if (res.status === 401) {
+              alert('Unauthorized User! Please login now.');
+              AsyncStorage.clear();
+              navigation.navigate('auth');
+            } else {
+              navigation.navigate('warning', {status: 1});
+            }
+          })
+          .catch(() => {
+            navigation.navigate('warning', {status: 3});
+          });
+      })
+      .catch(() => {
+        alert('Unauthorized User! Please login now.');
+        navigation.navigate('auth');
+      });
+  };
+
+  const delete_api = pid => {
+    AsyncStorage.getItem('@token')
+      .then(token => {
+        fetch(base_url + '/news_feed', {
+          method: 'DELETE',
+          headers: {'Content-Type': 'application/json', Authorization: token},
+          body: JSON.stringify({pid}),
+        }).then(res => {
+          if (res.status === 200) {
+            setAllPost(allPost.filter(data => data.pid !== pid));
+          } else if (res.status === 401) {
+            alert('Unauthorized User! Please login now.');
+            AsyncStorage.clear();
+            props.navigation.navigate('auth');
+          } else {
+            props.navigation.navigate('warning', {status: 1});
+          }
+        });
+      })
+      .catch(() => {
+        alert('Unauthorized User! Please login now.');
+        props.navigation.navigate('auth');
+      });
+  };
 
   const PostCardWrapper = ({item}) => {
     return (
@@ -61,6 +105,8 @@ const HomeScreen = props => {
         love={item.loves}
         share={item.shares}
         uid={item.uid}
+        loved={item.loved}
+        onLove={() => love_api(item.pid)}
       />
     );
   };
@@ -72,24 +118,28 @@ const HomeScreen = props => {
           headers: {'Content-Type': 'application/json', Authorization: token},
         })
           .then(res => {
+            setLoading(false);
             if (res.status === 200) {
               res
                 .json()
                 .then(json => setAllPost(json))
-                .catch(error =>
-                  props.navigation.navigate('warning', {status: 3}),
-                );
+                .catch(() => props.navigation.navigate('warning', {status: 3}));
             } else if (res.status === 401) {
               alert('Unauthorized User! Please login now.');
               AsyncStorage.clear();
               props.navigation.navigate('auth');
             } else {
-              props.navigation.navigate('warning', {status: 3});
+              props.navigation.navigate('warning', {status: 1});
             }
           })
-          .catch(error => props.navigation.navigate('warning', {status: 3}));
+          .catch(error => {
+            setLoading(false);
+            console.log(error);
+            props.navigation.navigate('warning', {status: 3});
+          });
+        setLoading(true);
       })
-      .catch(error => {
+      .catch(() => {
         alert('Unauthorized User! Please login now.');
         props.navigation.navigate('auth');
       });

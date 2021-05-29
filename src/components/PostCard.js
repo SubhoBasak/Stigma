@@ -1,5 +1,6 @@
 import React from 'react';
 import {Image, StyleSheet, TouchableOpacity, View, Text} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import {base_url} from '../../conf.js';
 
@@ -42,8 +43,12 @@ const PostCard = props => {
           alignItems: 'center',
           marginTop: 5,
         }}>
-        <TouchableOpacity style={style.button}>
-          <IconFA name="heart-o" size={24} color="#dd4020" />
+        <TouchableOpacity style={style.button} onPress={props.onLove}>
+          <IconFA
+            name={props.loved ? 'heart' : 'heart-o'}
+            size={24}
+            color={props.loved ? '#dd4020' : COLORS.slate_2}
+          />
           <Text style={style.button_text}>{props.love}</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -52,7 +57,7 @@ const PostCard = props => {
           <IconOC name="comment" size={24} color={COLORS.slate_1} />
           <View />
         </TouchableOpacity>
-        <TouchableOpacity style={style.button}>
+        <TouchableOpacity style={style.button} onPress={props.onShare}>
           <IconIO
             name="md-arrow-redo-outline"
             size={24}
