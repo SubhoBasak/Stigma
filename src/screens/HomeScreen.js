@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   View,
-  ScrollView,
   TouchableOpacity,
   Text,
   StyleSheet,
@@ -22,11 +21,14 @@ import {COLORS, FONTS} from '../constants/index.js';
 import SearchBar from '../components/SearchBar.js';
 import StatusBar from '../components/StatusBar.js';
 import PostCard from '../components/PostCard.js';
+import DeleteModal from '../components/DeleteModal.js';
 
 const HomeScreen = props => {
   const [loading, setLoading] = React.useState(false);
   const [allPost, setAllPost] = React.useState([]);
   const [reload, setReload] = React.useState(false);
+  const [deleteModal, setDeleteModal] = React.useState(false);
+  const [pid, setPid] = React.useState(null);
 
   const love_api = pid => {
     AsyncStorage.getItem('@token')
@@ -70,7 +72,8 @@ const HomeScreen = props => {
       });
   };
 
-  const delete_api = pid => {
+  const delete_api = () => {
+    setDeleteModal(!deleteModal);
     AsyncStorage.getItem('@token')
       .then(token => {
         fetch(base_url + '/news_feed', {
@@ -107,6 +110,10 @@ const HomeScreen = props => {
         uid={item.uid}
         loved={item.loved}
         onLove={() => love_api(item.pid)}
+        delete_post={() => {
+          setPid(item.pid);
+          setDeleteModal(!deleteModal);
+        }}
       />
     );
   };
@@ -176,6 +183,12 @@ const HomeScreen = props => {
           }
         />
       </SafeAreaView>
+      <DeleteModal
+        visible={deleteModal}
+        info="Do you really want to delete this post from your news feed?"
+        cancel={() => setDeleteModal(!deleteModal)}
+        delete={delete_api}
+      />
     </View>
   );
 };
