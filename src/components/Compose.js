@@ -1,11 +1,14 @@
 import React from 'react';
 import {
   Dimensions,
+  Modal,
   StyleSheet,
   TextInput,
   TouchableOpacity,
   View,
+  SafeAreaView,
 } from 'react-native';
+import EmojiSelector from 'react-native-emoji-selector';
 
 // icons
 import IconSLI from 'react-native-vector-icons/SimpleLineIcons';
@@ -16,10 +19,12 @@ import {COLORS, FONTS} from '../constants';
 const width = (Dimensions.get('screen').width * 95) / 100 - 110;
 
 const Compose = props => {
+  const [emojiKb, setEmojiKb] = React.useState(false);
+
   return (
     <View style={style.container}>
       <View style={style.wrapper}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => setEmojiKb(!emojiKb)}>
           <IconSLI style={style.icon} name="emotsmile" />
         </TouchableOpacity>
         <TouchableOpacity>
@@ -38,6 +43,18 @@ const Compose = props => {
           />
         </TouchableOpacity>
       </View>
+      <Modal transparent={true} visible={emojiKb}>
+        <View style={style.input_canvas}>
+          <View style={style.close_btn}>
+            <TouchableOpacity onPress={() => setEmojiKb(!emojiKb)}>
+              <IconSLI style={style.icon} name="close" />
+            </TouchableOpacity>
+          </View>
+          <SafeAreaView style={style.emoji_kb}>
+            <EmojiSelector onEmojiSelected={emoji => console.log(emoji)} />
+          </SafeAreaView>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -94,6 +111,20 @@ const style = StyleSheet.create({
     height: 'auto',
     minHeight: 42,
     maxHeight: 126,
+  },
+  input_canvas: {
+    height: '100%',
+    display: 'flex',
+    alignItems: 'flex-end',
+    backgroundColor: COLORS.white,
+    flexDirection: 'column',
+  },
+  close_btn: {
+    flex: 1,
+    padding: 5,
+  },
+  emoji_kb: {
+    flex: 9,
   },
 });
 
