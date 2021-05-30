@@ -98,6 +98,41 @@ const HomeScreen = props => {
       });
   };
 
+  const share_api = pid => {
+    AsyncStorage.getItem('@token')
+      .then(token => {
+        fetch(base_url + '/post/share', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json', Authorization: token},
+          body: JSON.stringify({pid}),
+        }).then(res => {
+          if (res.status === 200) {
+            setAllPost(
+              allPost.map(item => {
+                if (item.pid === pid) item.shares++;
+                return item;
+              }),
+            );
+          } else if (res.status === 401) {
+            alert('Unauthorized User! Please login now.');
+            AsyncStorage.clear();
+            props.navigation.navigate('auth');
+          } else if (res.status === 404) {
+            alert("Couldn't found the post!");
+            setAllPost(allPost.filter(item => item.pid !== pid));
+          } else if (res.status === 405) {
+            alert("You can't share this post!");
+          } else {
+            props.navigation.navigate('warning', {status: 1});
+          }
+        });
+      })
+      .catch(() => {
+        alert('Unauthorized User! Please login now.');
+        props.navigation.navigate('auth');
+      });
+  };
+
   const PostCardWrapper = ({item}) => {
     return (
       <PostCard
@@ -110,6 +145,7 @@ const HomeScreen = props => {
         uid={item.uid}
         loved={item.loved}
         onLove={() => love_api(item.pid)}
+        onShare={() => share_api(item.pid)}
         delete_post={() => {
           setPid(item.pid);
           setDeleteModal(!deleteModal);
