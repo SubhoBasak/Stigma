@@ -18,7 +18,10 @@ const InfoCard = props => {
 
   return (
     <>
-      <TouchableOpacity onPress={props.card_press} style={style.card}>
+      <TouchableOpacity
+        onLongPress={props.long_card_press}
+        onPress={props.card_press}
+        style={style.card}>
         <Image
           onPress={props.image_press}
           style={style.image}

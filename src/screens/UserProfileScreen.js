@@ -6,7 +6,6 @@ import {
   Text,
   Dimensions,
   TouchableOpacity,
-  ScrollView,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {base_url} from '../../conf.js';
@@ -45,43 +44,44 @@ const UserProfileScreen = props => {
         }
         fetch(base_url + tmp_url, {
           headers: {'Content-Type': 'application/json', Authorization: token},
-        }).then(res => {
-          setLoading(false);
-          if (res.status === 200) {
-            res
-              .json()
-              .then(json => {
-                setName(json.name);
-                setBio(json.bio);
-                setEmail(json.email);
-                setAddress(json.address);
-                setCover(json.cover);
-                setImage(json.image);
-                setUid(json.uid);
-              })
-              .catch(error => {
-                props.navigation.navigate('warning', {status: 3});
-              });
-          } else if (res.status === 401) {
-            AsyncStorage.clear();
-            alert('Unauthorized user! Please login now.');
-            props.navigation.navigate('auth');
-          } else if (res.status === 404) {
-            alert('User not found!');
-            props.navigation.goBack();
-          } else if (res.status === 405) {
-            alert('Your are allowed for this!');
-            props.navigation.goBack();
-          } else {
-            alert('Unauthorized User! Please login now.');
-            AsyncStorage.clear();
-            props.navigation.navigate('auth');
-          }
-        });
+        })
+          .then(res => {
+            setLoading(false);
+            if (res.status === 200) {
+              res
+                .json()
+                .then(json => {
+                  setName(json.name);
+                  setBio(json.bio);
+                  setEmail(json.email);
+                  setAddress(json.address);
+                  setCover(json.cover);
+                  setImage(json.image);
+                  setUid(json.uid);
+                })
+                .catch(() => {
+                  props.navigation.navigate('warning', {status: 3});
+                });
+            } else if (res.status === 401) {
+              AsyncStorage.clear();
+              alert('Unauthorized user! Please login now.');
+              props.navigation.navigate('auth');
+            } else if (res.status === 404) {
+              alert('User not found!');
+              props.navigation.goBack();
+            } else if (res.status === 405) {
+              alert('Your are allowed to view this profile!');
+              props.navigation.goBack();
+            } else {
+              props.navigation.navigate('warning', {status: 3});
+            }
+          })
+          .catch(() => {
+            setLoading(false);
+            props.navigation.navigate('warning', {status: 3});
+          });
       })
-      .catch(error => {
-        setLoading(false);
-        AsyncStorage.clear();
+      .catch(() => {
         alert('Unauthorized user! Please login now.');
         props.navigation.navigate('auth');
       });
@@ -89,59 +89,56 @@ const UserProfileScreen = props => {
 
   return (
     <>
-      <ScrollView
-        style={{width: '100%', height: '100%', backgroundColor: COLORS.white}}>
-        <View style={{width: '100%', height: '100%'}}>
-          <Image
-            style={style.cover}
-            source={
-              cover
-                ? {uri: base_url + '/cover/' + uid + '.jpg?' + new Date()}
-                : require('../Assets/Images/cover.jpg')
-            }
-          />
-          <View style={style.layout}>
-            <Text style={style.bio}>{bio}</Text>
-            <View style={style.border}>
-              <Image
-                style={style.profile}
-                source={
-                  image
-                    ? {uri: base_url + '/profile/' + uid + '.jpg?' + new Date()}
-                    : require('../Assets/Images/photo.png')
-                }
-              />
-            </View>
+      <View>
+        <Image
+          style={style.cover}
+          source={
+            cover
+              ? {uri: base_url + '/cover/' + uid + '.jpg?' + new Date()}
+              : require('../Assets/Images/cover.jpg')
+          }
+        />
+        <View style={style.layout}>
+          <Text style={style.bio}>{bio}</Text>
+          <View style={style.border}>
+            <Image
+              style={style.profile}
+              source={
+                image
+                  ? {uri: base_url + '/profile/' + uid + '.jpg?' + new Date()}
+                  : require('../Assets/Images/photo.png')
+              }
+            />
           </View>
-          <Text style={style.userName}>{name}</Text>
-          <View style={style.mainInfoContainer}>
-            <View style={style.mainInfo}>
-              <IconMI style={style.icon} name="alternate-email" />
-              <Text style={style.mainInfoText}>{email}</Text>
-            </View>
-            <View style={style.mainInfo}>
-              <IconF style={style.icon} name="home" />
-              <Text style={style.mainInfoText}>{address}</Text>
-            </View>
-            <View style={style.mainInfo}>
-              <IconAD style={style.icon} name="calendar" />
-              <Text style={style.mainInfoText}>27 May 2001</Text>
-            </View>
-          </View>
-          <View style={style.buttonContainer}>
-            <TouchableOpacity style={style.button}>
-              <IconF name="camera" style={style.icon} />
-              <Text style={style.buttonText}>Photos</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={style.button}>
-              <IconF name="message-square" style={style.icon} />
-              <Text style={style.buttonText}>Message</Text>
-            </TouchableOpacity>
-          </View>
-          <BottomLine />
-          <View style={{marginTop: 20}}></View>
         </View>
-      </ScrollView>
+        <Text style={style.userName}>{name}</Text>
+        <View style={style.mainInfoContainer}>
+          <View style={style.mainInfo}>
+            <IconMI style={style.icon} name="alternate-email" />
+            <Text style={style.mainInfoText}>{email}</Text>
+          </View>
+          <View style={style.mainInfo}>
+            <IconF style={style.icon} name="home" />
+            <Text style={style.mainInfoText}>{address}</Text>
+          </View>
+          <View style={style.mainInfo}>
+            <IconAD style={style.icon} name="calendar" />
+            <Text style={style.mainInfoText}>27 May 2001</Text>
+          </View>
+        </View>
+        <View style={style.buttonContainer}>
+          <TouchableOpacity style={style.button}>
+            <IconF name="camera" style={style.icon} />
+            <Text style={style.buttonText}>Photos</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={style.button}>
+            <IconF name="message-square" style={style.icon} />
+            <Text style={style.buttonText}>Message</Text>
+          </TouchableOpacity>
+        </View>
+        <BottomLine />
+        <View style={{marginTop: 20}}></View>
+      </View>
       <LoadingIndicator show={loading} />
     </>
   );

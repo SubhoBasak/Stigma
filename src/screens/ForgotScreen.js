@@ -34,7 +34,7 @@ const ForgotScreen = props => {
         }
         props.navigation.navigate('otp', {email});
       })
-      .catch(error => {
+      .catch(() => {
         return props.navigation.navigate('warning', {status: 3});
       });
   };

@@ -1,6 +1,5 @@
 import React from 'react';
 import {Image, StyleSheet, TouchableOpacity, View, Text} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 import {base_url} from '../../conf.js';
 
@@ -27,6 +26,7 @@ const PostCard = props => {
         title={props.user}
         body={props.caps}
         card_press={() => navigation.navigate('comment')}
+        long_card_press={props.delete_post}
       />
       <View>
         <Image

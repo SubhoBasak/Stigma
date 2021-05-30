@@ -1,11 +1,13 @@
 import React from 'react';
-import {RefreshControl, ScrollView, View} from 'react-native';
+import {FlatList, RefreshControl, SafeAreaView} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {base_url} from '../../conf.js';
 
+// constants
+import {COLORS} from '../constants/index.js';
+
 // components
 import ButtonCard from '../components/ButtonCard.js';
-import {COLORS} from '../constants/index.js';
 
 const BlockedScreen = props => {
   const [loading, setLoading] = React.useState(false);
@@ -23,26 +25,40 @@ const BlockedScreen = props => {
           .then(res => {
             setLoading(false);
             if (res.status === 200) {
-              setReload(!reload);
+              setAllUsers(allUsers.filter(item => item.cid !== cid));
             } else if (res.status === 405) {
               alert(
                 'Not allowed! You can only unblock users whome you blocked.',
               );
+              setAllUsers(allUsers.filter(item => item.cid !== cid));
             } else if (res.status === 401) {
               alert('Unauthorized User! Please login now.');
+              AsyncStorage.clear();
               props.navigation.navigate('auth');
             }
           })
-          .catch(error => {
+          .catch(() => {
             setLoading(false);
-            props.navigation.navigate('warning', {status: 3});
+            props.navigation.navigate('warning', {status: 1});
           });
         setLoading(true);
       })
-      .catch(error => {
+      .catch(() => {
         alert('Unauthorized User! Please login now.');
         props.navigation.navigate('auth');
       });
+  };
+
+  const ButtonCardWrapper = ({item}) => {
+    return (
+      <ButtonCard
+        image={item.image ? base_url + '/profile/' + item.uid + '.jpg' : null}
+        title={item.name}
+        body={item.email}
+        button1="Unblock"
+        onPress1={() => unblock_api(item.cid)}
+      />
+    );
   };
 
   React.useEffect(() => {
@@ -56,58 +72,42 @@ const BlockedScreen = props => {
             if (res.status === 200) {
               res
                 .json()
-                .then(json => {
-                  setAllUsers(
-                    json.map((data, index) => {
-                      return (
-                        <ButtonCard
-                          key={'info-card-' + index}
-                          button1="Unblock"
-                          title={data.name}
-                          body={data.email}
-                          onPress1={() => unblock_api(data.cid)}
-                        />
-                      );
-                    }),
-                  );
-                })
-                .catch(error => {
-                  props.navigation.navigate('warning', {status: 3});
-                });
+                .then(json => setAllUsers(json))
+                .catch(() => props.navigation.navigate('warning', {status: 3}));
             } else if (res.status === 401) {
               alert('Unauthorized User! Please login now.');
               AsyncStorage.clear();
               props.navigation.navigate('auth');
             } else {
-              props.navigation.navigate('warning', {status: 3});
+              props.navigation.navigate('warning', {status: 1});
             }
           })
-          .catch(error => {
+          .catch(() => {
             setLoading(false);
             props.navigation.navigate('warning', {status: 3});
           });
         setLoading(true);
       })
-      .catch(error => {
+      .catch(() => {
         alert('Unauthorized User! Please login now.');
         props.navigation.navigate('auth');
       });
   }, [reload]);
 
   return (
-    <ScrollView
-      style={{height: '100%', backgroundColor: COLORS.white}}
-      refreshControl={
-        <RefreshControl
-          refreshing={loading}
-          onRefresh={() => setReload(!reload)}
-        />
-      }>
-      <View style={{height: '100%'}}>
-        {allUsers}
-        <View style={{height: 500}} />
-      </View>
-    </ScrollView>
+    <SafeAreaView style={{backgroundColor: COLORS.white}}>
+      <FlatList
+        data={allUsers}
+        renderItem={ButtonCardWrapper}
+        keyExtractor={item => item.uid}
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            onRefresh={() => setReload(!reload)}
+          />
+        }
+      />
+    </SafeAreaView>
   );
 };
 
