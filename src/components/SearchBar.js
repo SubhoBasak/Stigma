@@ -1,8 +1,6 @@
 import React from 'react';
 import {TextInput, View, StyleSheet} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/core';
-import {base_url} from '../../conf.js';
 
 // icons
 import IconIO from 'react-native-vector-icons/Ionicons';
@@ -10,7 +8,7 @@ import IconIO from 'react-native-vector-icons/Ionicons';
 // constants
 import {FONTS, COLORS} from '../constants';
 
-const SearchBar = props => {
+const SearchBar = () => {
   const [keyword, setKeyword] = React.useState(null);
 
   const navigation = useNavigation();

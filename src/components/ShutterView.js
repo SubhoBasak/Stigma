@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, View, Image} from 'react-native';
 
 // constants
-import {COLORS, FONTS} from '../constants';
+import {COLORS} from '../constants';
 
 const ShutterView = props => {
   return (

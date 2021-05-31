@@ -17,7 +17,6 @@ import {COLORS} from '../constants';
 // components
 import InputBox from '../components/InputBox.js';
 import PushButton from '../components/PushButton.js';
-import LoadingIndicator from '../components/LoadingIndicator.js';
 
 const EditScreen = props => {
   const [loading, setLoading] = React.useState(true);
@@ -64,23 +63,23 @@ const EditScreen = props => {
                   AsyncStorage.clear();
                   props.navigation.navigate('auth');
                 } else if (res.status === 404) {
-                  alert('User not found!');
-                } else {
-                  props.navigation.navigate('warning', {status: 3});
-                }
+                  alert('User not found! Please login again.');
+                  AsyncStorage.clear();
+                  props.navigation.navigate('auth');
+                } else props.navigation.navigate('warning', {status: 1});
               })
-              .catch(error => {
+              .catch(() => {
                 setLoading(false);
                 props.navigation.navigate('warning', {status: 3});
               });
             setLoading(true);
           })
-          .catch(error => {
+          .catch(() => {
             alert('Unauthorized User! Please login now.');
             props.navigation.navigate('auth');
           });
       })
-      .catch(error => {});
+      .catch(() => {});
   };
 
   const change_cover_pic = () => {
@@ -117,23 +116,23 @@ const EditScreen = props => {
                   AsyncStorage.clear();
                   props.navigation.navigate('auth');
                 } else if (res.status === 404) {
-                  alert('User not found!');
-                } else {
-                  props.navigation.navigate('warning', {status: 3});
-                }
+                  alert('User not found! Please login again.');
+                  AsyncStorage.clear();
+                  props.navigation.navigate('auth');
+                } else props.navigation.navigate('warning', {status: 1});
               })
-              .catch(error => {
+              .catch(() => {
                 setLoading(false);
                 props.navigation.navigate('warning', {status: 3});
               });
             setLoading(true);
           })
-          .catch(error => {
+          .catch(() => {
             alert('Unauthorized User! Please login now.');
             props.navigation.navigate('auth');
           });
       })
-      .catch(error => {});
+      .catch(() => {});
   };
 
   const update_api = () => {
@@ -151,18 +150,16 @@ const EditScreen = props => {
         })
           .then(res => {
             setLoading(false);
-            if (res.status === 200) {
-              props.navigation.navigate('profile');
-            } else {
-              props.navigation.navigate('warning', {status: 1});
-            }
+            if (res.status === 200) props.navigation.navigate('profile');
+            else props.navigation.navigate('warning', {status: 1});
           })
-          .catch(error => {
+          .catch(() => {
+            setLoading(false);
             props.navigation.navigate('warning', {status: 3});
           });
         setLoading(true);
       })
-      .catch(error => {
+      .catch(() => {
         alert('Unauthorized user! Please login now.');
         props.navigation.navigate('auth');
       });
@@ -187,19 +184,15 @@ const EditScreen = props => {
                   setCover(json.cover);
                   setUid(json.uid);
                 })
-                .catch(error => {
-                  props.navigation.navigate('warning', {status: 3});
-                });
-            } else {
-              props.navigation.navigate('warning', {status: 1});
-            }
+                .catch(() => props.navigation.navigate('warning', {status: 3}));
+            } else props.navigation.navigate('warning', {status: 1});
           })
-          .catch(error => {
+          .catch(() => {
             setLoading(false);
             props.navigation.navigate('warning', {status: 3});
           });
       })
-      .catch(error => {
+      .catch(() => {
         alert('Unauthorized user! Please login now.');
         props.navigation.navigate('auth');
       });
@@ -208,7 +201,7 @@ const EditScreen = props => {
   return (
     <>
       <ScrollView
-        style={{width: '100%', height: '100%', backgroundColor: COLORS.white}}
+        style={{backgroundColor: COLORS.white}}
         refreshControl={
           <RefreshControl
             refreshing={loading}
@@ -256,7 +249,6 @@ const EditScreen = props => {
           <PushButton text="Update" onPress={update_api} />
         </View>
       </ScrollView>
-      <LoadingIndicator show={loading} />
     </>
   );
 };

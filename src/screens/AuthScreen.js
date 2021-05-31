@@ -11,7 +11,7 @@ import ResetPasswordScreen from './ResetPasswordScreen.js';
 
 const StackNav = createStackNavigator();
 
-const AuthScreen = props => {
+const AuthScreen = () => {
   return (
     <StackNav.Navigator
       initialRouteName="login"

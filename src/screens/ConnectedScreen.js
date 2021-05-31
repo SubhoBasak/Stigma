@@ -1,6 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import {RefreshControl, Alert, SafeAreaView, FlatList} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {base_url} from '../../conf';
 
 // constants
@@ -34,16 +34,16 @@ const Connected = props => {
               AsyncStorage.clear();
               props.navigation.navigate('auth');
             } else {
-              props.navigation.navigate('warning', {status: 3});
+              props.navigation.navigate('warning', {status: 1});
             }
           })
-          .catch(error => {
+          .catch(() => {
             setLoading(false);
             props.navigation.navigate('warning', {status: 3});
           });
         setLoading(true);
       })
-      .catch(error => {
+      .catch(() => {
         alert('Unauthorized User! Please login now.');
         props.navigation.navigate('auth');
       });
@@ -74,43 +74,36 @@ const Connected = props => {
     );
   };
 
-  React.useEffect(async () => {
-    const token = await AsyncStorage.getItem('@token');
-
-    if (!token) {
-      alert('Please login again.');
-      return props.navigation.navigate('auth');
-    }
-
-    fetch(base_url + '/connection/connected', {
-      method: 'GET',
-      headers: {'Content-Type': 'application/json', Authorization: token},
-    })
-      .then(res => {
-        if (res.status === 200) {
-          res
-            .json()
-            .then(json => setAllUsers(json))
-            .catch(error => {
-              props.navigation.goBack();
-              return props.navigation.navigate('warning', {status: 3});
-            });
-        } else if (res.status === 401) {
-          alert('You are unauthorized to access this page! Please login now.');
-          AsyncStorage.clear();
-          return props.navigation.navigate('auth');
-        } else if (res.status === 500) {
-          props.navigation.goBack();
-          return props.navigation.navigate('warning', {status: 1});
-        }
-        setLoading(false);
+  React.useEffect(() => {
+    AsyncStorage.getItem('@token')
+      .then(token => {
+        fetch(base_url + '/connection/connected', {
+          method: 'GET',
+          headers: {'Content-Type': 'application/json', Authorization: token},
+        })
+          .then(res => {
+            if (res.status === 200) {
+              res
+                .json()
+                .then(json => setAllUsers(json))
+                .catch(() => props.navigation.navigate('warning', {status: 3}));
+            } else if (res.status === 401) {
+              alert('Unauthorized User! Please login now.');
+              AsyncStorage.clear();
+              props.navigation.navigate('auth');
+            } else props.navigation.navigate('warning', {status: 1});
+            setLoading(false);
+          })
+          .catch(() => {
+            setLoading(false);
+            props.navigation.navigate('warning', {status: 3});
+          });
+        setLoading(true);
       })
-      .catch(error => {
-        setLoading(false);
-        props.navigation.goBack();
-        return props.navigation.navigate('warning', {status: 3});
+      .catch(() => {
+        alert('Unauthorized User! Please login now.');
+        props.navigation.navigate('auth');
       });
-    setLoading(true);
   }, [reload]);
 
   return (

@@ -3,6 +3,8 @@ import {StyleSheet, TextInput, TouchableOpacity, View} from 'react-native';
 
 // icons
 import IconEV from 'react-native-vector-icons/EvilIcons';
+
+// constants
 import {COLORS, FONTS} from '../constants';
 
 const PasswordBox = props => {

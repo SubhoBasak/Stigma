@@ -1,9 +1,11 @@
 import React from 'react';
 import {ScrollView, View} from 'react-native';
 
+// constants
+import {COLORS} from '../constants';
+
 // components
 import InfoCard from '../components/InfoCard.js';
-import {COLORS} from '../constants/index.js';
 
 const AlbumScreen = props => {
   const all_albums = [
