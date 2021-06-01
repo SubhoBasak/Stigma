@@ -11,7 +11,7 @@ import Requests from './RequestsScreen.js';
 
 const TopNav = createMaterialTopTabNavigator();
 
-const UserScreen = props => {
+const UserScreen = () => {
   return (
     <TopNav.Navigator
       style={{width: '100%', minHeight: 1000}}

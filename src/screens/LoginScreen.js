@@ -36,9 +36,7 @@ const LoginScreen = props => {
               AsyncStorage.setItem('@token', json.token);
               props.navigation.navigate('main');
             })
-            .catch(error => {
-              return props.navigation.navigate('warning', {status: 3});
-            });
+            .catch(() => props.navigation.navigate('warning', {status: 3}));
         } else if (res.status === 401) {
           alert('User not verified!');
         } else if (res.status === 500) {
@@ -46,9 +44,9 @@ const LoginScreen = props => {
         }
         setLoading(false);
       })
-      .catch(error => {
+      .catch(() => {
         setLoading(false);
-        return props.navigation.navigate('warning', {status: 3});
+        props.navigation.navigate('warning', {status: 3});
       });
     setLoading(true);
   };

@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Modal,
-  View,
-  Image,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import {Modal, View, Image, StyleSheet} from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
 
 // constants

@@ -34,7 +34,7 @@ const NewPostScreen = props => {
       .then(image => {
         setImage(image);
       })
-      .catch(error => {});
+      .catch(() => {});
   };
 
   const post_api = () => {
@@ -60,23 +60,23 @@ const NewPostScreen = props => {
             if (res.status === 200) {
               setImage(null);
               setCaption('');
-              props.navigation.navigate('home');
+              props.navigation.goBack();
             } else if (res.status === 401) {
               alert('Unauthorized User! Please login now.');
               AsyncStorage.clear();
               props.navigation.navigate('auth');
             } else {
-              props.navigation.navigate('warning', {status: 3});
+              props.navigation.navigate('warning', {status: 1});
             }
             setLoading(false);
           })
-          .catch(error => {
+          .catch(() => {
             setLoading(false);
             props.navigation.navigate('warning', {status: 3});
           });
         setLoading(true);
       })
-      .catch(error => {
+      .catch(() => {
         alert('Unauthorized User! Please login now.');
         props.navigation.navigate('auth');
       });

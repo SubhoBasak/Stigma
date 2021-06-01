@@ -16,11 +16,9 @@ const ResetPasswordScreen = props => {
 
   const reset_api = () => {
     if (!password || !password2) {
-      alert('Please enter all the fields.');
-      return;
+      return alert('Please enter all the fields.');
     } else if (password !== password2) {
-      alert('New passwords does not match!');
-      return;
+      return alert('New passwords does not match!');
     }
 
     fetch(base_url + '/user/reset', {
@@ -33,21 +31,13 @@ const ResetPasswordScreen = props => {
       }),
     })
       .then(res => {
-        if (res.status === 200) {
-          props.navigation.navigate('login');
-        } else if (res.status === 404) {
-          props.navigation.goBack();
-          return props.navigation.navigate('warning', {status: 1});
-        } else if (res.status === 401) {
-          alert('OTP expired or Invalid OTP.');
-          return;
-        } else {
-          alert('Server Error! Please try again later.');
-        }
+        if (res.status === 200) props.navigation.navigate('login');
+        else if (res.status === 404)
+          props.navigation.navigate('warning', {status: 0});
+        else if (res.status === 401) alert('OTP expired or Invalid OTP.');
+        else alert('Server Error! Please try again later.');
       })
-      .catch(error => {
-        return props.navigation.navigate('warning', {status: 3});
-      });
+      .catch(() => props.navigation.navigate('warning', {status: 3}));
   };
 
   return (

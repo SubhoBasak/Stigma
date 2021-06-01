@@ -10,11 +10,11 @@ const SplashScreen = props => {
 
   React.useEffect(() => {
     AsyncStorage.getItem('@token')
-      .then(token => {
+      .then(() => {
         props.navigation.navigate('main');
         setLoading(false);
       })
-      .catch(error => {
+      .catch(() => {
         props.navigation.navigate('auth');
         setLoading(false);
       });

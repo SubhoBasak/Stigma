@@ -40,9 +40,7 @@ const SearchResultScreen = props => {
               alert('Unauthorized User! Please login now.');
               AsyncStorage.clear();
               props.navigation.navigate('auth');
-            } else {
-              props.navigation.navigate('warning', {status: 1});
-            }
+            } else props.navigation.navigate('warning', {status: 1});
           })
           .catch(() => {
             setLoading(false);
@@ -82,9 +80,7 @@ const SearchResultScreen = props => {
             } else if (res.status === 404) {
               alert('User does not send you friend request!');
               setUsers(users.filter(item => item.cid !== cid));
-            } else {
-              props.navigation.navigate('warning', {status: 1});
-            }
+            } else props.navigation.navigate('warning', {status: 1});
           })
           .catch(() => {
             setLoading(false);
@@ -134,9 +130,7 @@ const SearchResultScreen = props => {
               alert('Unauthorized User! Please login now.');
               AsyncStorage.clear();
               props.navigation.navigate('auth');
-            } else {
-              props.navigation.navigate('warning', {status: 1});
-            }
+            } else props.navigation.navigate('warning', {status: 1});
           })
           .catch(() => {
             setLoading(false);
@@ -246,13 +240,9 @@ const SearchResultScreen = props => {
                   return item;
                 }),
               );
-            } else {
-              props.navigation.navigate('warning', {status: 1});
-            }
+            } else props.navigation.navigate('warning', {status: 1});
           })
-          .catch(() => {
-            props.navigation.navigate('warning', {status: 3});
-          });
+          .catch(() => props.navigation.navigate('warning', {status: 3}));
       })
       .catch(() => {
         alert('Unauthorized User! Please login now.');
@@ -287,9 +277,7 @@ const SearchResultScreen = props => {
               alert('Unauthorized User! Please login now.');
               AsyncStorage.clear();
               props.navigation.navigate('auth');
-            } else {
-              props.navigation.navigate('warning', {status: 1});
-            }
+            } else props.navigation.navigate('warning', {status: 1});
           })
           .catch(() => {
             setLoading(false);
@@ -387,18 +375,19 @@ const SearchResultScreen = props => {
                 .json()
                 .then(json => setUsers(json))
                 .catch(() => props.navigation.navigate('warning', {status: 3}));
-            } else if (res.status === 500) {
+            } else {
               props.navigation.navigate('warning', {status: 1});
             }
             setLoading(false);
           })
           .catch(() => {
             setLoading(false);
-            return props.navigation.navigate('warning', {status: 3});
+            props.navigation.navigate('warning', {status: 3});
           });
         setLoading(true);
       })
       .catch(() => {
+        alert('Unauthorized User! Please login now.');
         props.navigation.navigate('auth');
       });
   }, [reload]);

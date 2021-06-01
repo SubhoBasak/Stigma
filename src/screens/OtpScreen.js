@@ -13,11 +13,8 @@ const OtpScreen = props => {
   const [otp, setOtp] = React.useState(null);
 
   const goto_reset_view = () => {
-    if (!otp) {
-      alert('Please enter the OTP!');
-      return;
-    }
-    props.navigation.navigate('reset', {otp});
+    if (otp) props.navigation.navigate('reset', {otp});
+    else alert('Please enter the OTP!');
   };
 
   return (

@@ -1,6 +1,6 @@
 import React from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {RefreshControl, FlatList, SafeAreaView, Alert} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {base_url} from '../../conf.js';
 
 // constants
@@ -24,24 +24,21 @@ const Requested = props => {
           body: JSON.stringify({cid}),
         })
           .then(res => {
-            if (res.status === 200) {
-              return setAllUsers(allUsers.filter(item => item.cid !== cid));
-            } else if (res.status === 404) {
-              props.navigation.goBack();
-              return props.navigation.navigate('warning', {status: 0});
-            } else if (res.status === 500) {
-              props.navigation.goBack();
-              return props.navigation.navigate('warning', {status: 1});
-            }
+            if (res.status === 200)
+              setAllUsers(allUsers.filter(item => item.cid !== cid));
+            else if (res.status === 404)
+              props.navigation.navigate('warning', {status: 0});
+            else if (res.status === 500)
+              props.navigation.navigate('warning', {status: 1});
           })
-          .catch(error => {
+          .catch(() => {
             props.navigation.goBack();
-            return props.navigation.navigate('warning', {status: 3});
+            props.navigation.navigate('warning', {status: 3});
           });
       })
-      .catch(error => {
+      .catch(() => {
         alert('Please login again.');
-        return props.navigation.navigate('auth');
+        props.navigation.navigate('auth');
       });
   };
 
@@ -77,27 +74,21 @@ const Requested = props => {
               res
                 .json()
                 .then(json => setAllUsers(json))
-                .catch(() => {
-                  props.navigation.goBack();
-                  return props.navigation.navigate('warning', {status: 3});
-                });
+                .catch(() => props.navigation.navigate('warning', {status: 3}));
             } else if (res.status === 401) {
               alert('Unauthorized user! Please login now.');
               AsyncStorage.clear();
-              return props.navigation.navigate('auth');
-            } else {
-              return props.navigation.navigate('warning', {status: 1});
-            }
+              props.navigation.navigate('auth');
+            } else props.navigation.navigate('warning', {status: 1});
           })
           .catch(() => {
             setLoading(false);
-            props.navigation.goBack();
-            return props.navigation.navigate('warning', {status: 3});
+            props.navigation.navigate('warning', {status: 3});
           });
       })
-      .catch(error => {
+      .catch(() => {
         alert('Unauthorized user! Please login now.');
-        return props.navigation.navigate('auth');
+        props.navigation.navigate('auth');
       });
   }, [reload]);
 

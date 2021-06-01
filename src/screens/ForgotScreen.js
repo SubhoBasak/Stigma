@@ -15,8 +15,7 @@ const ForgotScreen = props => {
 
   const forgot_api = () => {
     if (!email) {
-      alert('Please enter the email.');
-      return;
+      return alert('Please enter the email.');
     }
 
     fetch(base_url + '/user/forgot', {
@@ -25,18 +24,13 @@ const ForgotScreen = props => {
       body: JSON.stringify({email}),
     })
       .then(res => {
-        if (res.status === 404) {
-          props.navigation.goBack();
-          return props.navigation.navigate('warning', {status: 0});
-        } else if (res.status === 500) {
-          props.navigation.goBack();
-          return props.navigation.navigate('warning', {status: 1});
-        }
-        props.navigation.navigate('otp', {email});
+        if (res.status === 200) props.navigation.navigate('otp', {email});
+        else if (res.status === 404)
+          props.navigation.navigate('warning', {status: 0});
+        else if (res.status === 500)
+          props.navigation.navigate('warning', {status: 1});
       })
-      .catch(() => {
-        return props.navigation.navigate('warning', {status: 3});
-      });
+      .catch(() => props.navigation.navigate('warning', {status: 3}));
   };
 
   return (

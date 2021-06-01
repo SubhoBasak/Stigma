@@ -32,23 +32,16 @@ const OtpScreen = props => {
               AsyncStorage.setItem('@token', json.token);
               props.navigation.navigate('main');
             })
-            .catch(error => {
-              props.navigation.goBack();
-              return props.navigation.navigate('warning', {status: 3});
-            });
-        } else if (res.status === 404) {
-          props.navigation.goBack();
-          return props.navigation.navigate('warning', {status: 1});
-        } else if (res.status === 401) {
-          alert('Invalid OTP!');
-          return;
-        }
+            .catch(() => props.navigation.navigate('warning', {status: 3}));
+        } else if (res.status === 404)
+          props.navigation.navigate('warning', {status: 1});
+        else if (res.status === 401) alert('Invalid OTP!');
         setLoading(false);
       })
-      .catch(error => {
+      .catch(() => {
         setLoading(false);
         props.navigation.goBack();
-        return props.navigation.navigate('warning', {status: 3});
+        props.navigation.navigate('warning', {status: 3});
       });
     setLoading(true);
   };

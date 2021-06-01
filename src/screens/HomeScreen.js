@@ -175,9 +175,8 @@ const HomeScreen = props => {
               props.navigation.navigate('warning', {status: 1});
             }
           })
-          .catch(error => {
+          .catch(() => {
             setLoading(false);
-            console.log(error);
             props.navigation.navigate('warning', {status: 3});
           });
         setLoading(true);

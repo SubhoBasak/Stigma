@@ -1,5 +1,7 @@
 import React from 'react';
 import {View, Text, Image, StyleSheet} from 'react-native';
+
+// constants
 import {COLORS, FONTS} from '../constants';
 
 const WarningScreen = props => {

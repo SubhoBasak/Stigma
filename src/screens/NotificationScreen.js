@@ -8,13 +8,15 @@ import {
   RefreshControl,
   TouchableOpacity,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {base_url} from '../../conf.js';
+
+// constants
+import {COLORS, FONTS} from '../constants/index.js';
 
 // components
 import SearchBar from '../components/SearchBar.js';
 import InfoCard from '../components/InfoCard.js';
-import {COLORS, FONTS} from '../constants/index.js';
-import {base_url} from '../../conf.js';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const NotificationScreen = props => {
   const [loading, setLoading] = React.useState(false);
@@ -41,7 +43,7 @@ const NotificationScreen = props => {
             } else if (res.status === 404) {
               alert("Can't find the notification!");
               setAllNotf(allNotf.filter(item => item._id !== nid));
-            } else props.navigation.navigate('warning', {status: 3});
+            } else props.navigation.navigate('warning', {status: 1});
           })
           .catch(() => {
             setLoading(false);
@@ -68,7 +70,7 @@ const NotificationScreen = props => {
               alert('Unauthorized User! Please login now.');
               AsyncStorage.clear();
               props.navigation.navigate('auth');
-            } else props.navigation.navigate('warning', {status: 3});
+            } else props.navigation.navigate('warning', {status: 1});
           })
           .catch(() => props.navigation.navigate('warning', {status: 3}));
       })

@@ -32,18 +32,15 @@ const RegisterScreen = props => {
       }),
     })
       .then(res => {
-        if (res.status === 200) {
-          props.navigation.navigate('verify', {email});
-        } else if (res.status === 409) {
+        if (res.status === 200) props.navigation.navigate('verify', {email});
+        else if (res.status === 409)
           alert('Account already exist with this email');
-        } else if (res.status === 500) {
-          props.navigation.navigate('warning', {status: 1});
-        }
+        else props.navigation.navigate('warning', {status: 1});
         setLoading(false);
       })
-      .catch(error => {
+      .catch(() => {
         setLoading(false);
-        return props.navigation.navigate('warning', {status: 3});
+        props.navigation.navigate('warning', {status: 3});
       });
     setLoading(true);
   };

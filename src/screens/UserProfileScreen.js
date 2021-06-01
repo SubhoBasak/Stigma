@@ -29,7 +29,7 @@ import DeleteModal from '../components/DeleteModal.js';
 const size = Dimensions.get('window').width;
 
 const UserProfileScreen = props => {
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
   const [image, setImage] = React.useState(null);
   const [cover, setCover] = React.useState(null);
   const [name, setName] = React.useState('');
@@ -52,18 +52,16 @@ const UserProfileScreen = props => {
           body: JSON.stringify({pid}),
         })
           .then(res => {
-            if (res.status === 200) {
+            if (res.status === 200)
               setAllPost(allPost.filter(item => item._id != pid));
-            } else if (res.status === 401) {
+            else if (res.status === 401) {
               alert('Unauthorized user! Please login now.');
               AsyncStorage.clear();
               props.navigation.navigate('auth');
             } else if (res.status === 404) {
               alert("Can't find the post!");
               setAllPost(allPost.filter(item => item._id != pid));
-            } else {
-              props.navigation.navigate('warning', {status: 1});
-            }
+            } else props.navigation.navigate('warning', {status: 1});
           })
           .catch(() => props.navigation.navigate('warning', {status: 3}));
       })
@@ -124,18 +122,16 @@ const UserProfileScreen = props => {
                   props.navigation.navigate('warning', {status: 3});
                 });
             } else if (res.status === 401) {
-              AsyncStorage.clear();
               alert('Unauthorized user! Please login now.');
+              AsyncStorage.clear();
               props.navigation.navigate('auth');
             } else if (res.status === 404) {
               alert('User not found!');
               props.navigation.goBack();
             } else if (res.status === 405) {
-              alert('Your are allowed to view this profile!');
+              alert('Your are not allowed to view this profile!');
               props.navigation.goBack();
-            } else {
-              props.navigation.navigate('warning', {status: 3});
-            }
+            } else props.navigation.navigate('warning', {status: 1});
           })
           .catch(() => {
             setLoading(false);
@@ -154,13 +150,9 @@ const UserProfileScreen = props => {
               alert('Unauthorized User! Please login now.');
               AsyncStorage.clear();
               props.navigation.navigate('auth');
-            } else {
-              props.navigation.navigate('warning', {status: 1});
-            }
+            } else props.navigation.navigate('warning', {status: 1});
           })
-          .catch(() => {
-            props.navigation.navigate('warning', {status: 3});
-          });
+          .catch(() => props.navigation.navigate('warning', {status: 3}));
       })
       .catch(() => {
         alert('Unauthorized user! Please login now.');
