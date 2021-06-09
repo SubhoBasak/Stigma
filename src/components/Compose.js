@@ -36,7 +36,7 @@ const Compose = props => {
           placeholder={props.placeholder}
           multiline={true}
         />
-        <TouchableOpacity>
+        <TouchableOpacity onPress={props.send}>
           <IconSLI
             style={[style.icon, {color: COLORS.primary}]}
             name="arrow-up-circle"

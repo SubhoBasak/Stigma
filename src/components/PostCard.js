@@ -25,7 +25,9 @@ const PostCard = props => {
         }
         title={props.user}
         body={props.caps}
-        card_press={() => navigation.navigate('comment')}
+        card_press={() =>
+          navigation.navigate('comment', {pid: props.pid, own: props.own})
+        }
         long_card_press={props.delete_post}
       />
       <View>
@@ -53,7 +55,9 @@ const PostCard = props => {
         </TouchableOpacity>
         <TouchableOpacity
           style={style.button}
-          onPress={() => navigation.navigate('comment')}>
+          onPress={() =>
+            navigation.navigate('comment', {pid: props.pid, own: props.own})
+          }>
           <IconOC name="comment" size={24} color={COLORS.slate_1} />
           <View />
         </TouchableOpacity>

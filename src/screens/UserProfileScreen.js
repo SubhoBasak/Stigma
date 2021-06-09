@@ -74,7 +74,9 @@ const UserProfileScreen = props => {
   const PostCardWrapper = ({item}) => {
     return (
       <PostCard
-        profile={item.image}
+        own={true}
+        pid={item._id}
+        profile={image}
         image={item.photo}
         user={name}
         caps={item.caption}
@@ -163,6 +165,7 @@ const UserProfileScreen = props => {
   return (
     <SafeAreaView>
       <FlatList
+        style={{backgroundColor: COLORS.white}}
         data={allPost}
         renderItem={PostCardWrapper}
         keyExtractor={item => item._id || item.pid}

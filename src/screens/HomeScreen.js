@@ -136,6 +136,7 @@ const HomeScreen = props => {
   const PostCardWrapper = ({item}) => {
     return (
       <PostCard
+        pid={item.pid}
         profile={item.image}
         image={item.photo}
         user={item.name}

@@ -139,6 +139,7 @@ const NotificationScreen = props => {
       <FlatList
         data={allNotf}
         renderItem={InfoCardWrapper}
+        keyExtractor={item => item._id}
         ListHeaderComponent={
           <>
             <SearchBar />
