@@ -13,6 +13,7 @@ import {COLORS, FONTS} from '../constants';
 
 // components
 import InfoCard from './InfoCard.js';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const PostCard = props => {
   const navigation = useNavigation();
@@ -26,7 +27,18 @@ const PostCard = props => {
         title={props.user}
         body={props.caps}
         card_press={() =>
-          navigation.navigate('comment', {pid: props.pid, own: props.own})
+          AsyncStorage.getItem('@token')
+            .then(token =>
+              navigation.navigate('comment', {
+                pid: props.pid,
+                own: props.own,
+                token,
+              }),
+            )
+            .catch(() => {
+              alert('Unauthorized User! Please login now.');
+              props.navigation.navigate('auth');
+            })
         }
         long_card_press={props.delete_post}
       />
@@ -56,7 +68,18 @@ const PostCard = props => {
         <TouchableOpacity
           style={style.button}
           onPress={() =>
-            navigation.navigate('comment', {pid: props.pid, own: props.own})
+            AsyncStorage.getItem('@token')
+              .then(token =>
+                navigation.navigate('comment', {
+                  pid: props.pid,
+                  own: props.own,
+                  token,
+                }),
+              )
+              .catch(() => {
+                alert('Unauthorized User! Please login now.');
+                props.navigation.navigate('auth');
+              })
           }>
           <IconOC name="comment" size={24} color={COLORS.slate_1} />
           <View />

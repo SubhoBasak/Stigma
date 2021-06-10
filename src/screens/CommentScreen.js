@@ -11,9 +11,6 @@ import {COLORS} from '../constants';
 import PostCard from '../components/PostCard.js';
 import Compose from '../components/Compose.js';
 import InfoCard from '../components/InfoCard.js';
-import {set} from 'react-native-reanimated';
-
-const socket = io(base_url + '/comment');
 
 const CommentScreen = props => {
   const [uid, setUid] = React.useState(null);
@@ -27,23 +24,35 @@ const CommentScreen = props => {
   const [allComments, setAllComments] = React.useState([]);
   const [comment, setComment] = React.useState('');
 
+  const socket = io(base_url + '/comment', {
+    extraHeaders: {Authorization: props.route.params.token},
+  });
   socket.connect();
+  socket.on('err', data => {
+    if (data.status === 401) {
+      alert('Unauthorized User! Please login now.');
+      props.navigation.navigate('auth');
+    } else if (data.status === 404)
+      props.navigation.navigate('warning', {status: 0});
+    else if (data.status === 405) {
+      alert('Your are not allowed to comment on this post!');
+      props.navigation.goBack();
+    } else props.navigation.navigate('warning', {status: 3});
+  });
+  socket.on('submit', data => setAllComments(allComments.concat([data])));
 
   const comment_now = () => {
-    AsyncStorage.getItem('@token')
-      .then(token => socket.emit('cmnt', {token, comment}))
-      .catch(() => {
-        alert('Unauthorized User! Please login now.');
-        props.navigation.navigate('auth');
-      });
+    socket.emit('comment', {comment, pid: props.route.params.pid});
+    setComment('');
   };
 
   const InfoCardWrapper = ({item}) => {
     return (
       <InfoCard
         card_press={() => props.navigation.navigate('profile', {uid: item.uid})}
-        title="User Name"
-        body="This is a long long long comment for testing. This is a long long long comment for testing."
+        title={item.name}
+        image={item.profile ? base_url + '/profile/' + item.uid + '.jpg' : null}
+        body={item.comment}
       />
     );
   };
@@ -97,6 +106,7 @@ const CommentScreen = props => {
       <FlatList
         data={allComments}
         renderItem={InfoCardWrapper}
+        keyExtractor={item => item.cid}
         ListHeaderComponent={
           <PostCard
             uid={uid}
@@ -114,6 +124,7 @@ const CommentScreen = props => {
       <Compose
         placeholder="Enter your comment here..."
         onChangeText={text => setComment(text)}
+        value={comment}
         send={comment_now}
       />
     </SafeAreaView>

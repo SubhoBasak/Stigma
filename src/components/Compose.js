@@ -34,6 +34,7 @@ const Compose = props => {
           style={style.input}
           onChangeText={props.onChangeText}
           placeholder={props.placeholder}
+          value={props.value}
           multiline={true}
         />
         <TouchableOpacity onPress={props.send}>

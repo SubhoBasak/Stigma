@@ -35,7 +35,14 @@ const NotificationScreen = props => {
             setLoading(false);
             if (res.status === 200) {
               setAllNotf(allNotf.filter(item => item._id !== nid));
-              props.navigation.navigate('comment', {pid});
+              AsyncStorage.getItem('@token')
+                .then(token =>
+                  props.navigation.navigate('comment', {pid, token}),
+                )
+                .catch(() => {
+                  alert('Unauthorized User! Please login now.');
+                  props.navigation.navigate('auth');
+                });
             } else if (res.status === 401) {
               alert('Unauthorized User! Please login now.');
               AsyncStorage.clear();
