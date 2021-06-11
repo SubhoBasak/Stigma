@@ -39,7 +39,7 @@ const CommentScreen = props => {
       props.navigation.goBack();
     } else props.navigation.navigate('warning', {status: 3});
   });
-  socket.on('submit', data => setAllComments(allComments.concat([data])));
+  socket.on('new', data => setAllComments(allComments.concat([data])));
 
   const comment_now = () => {
     socket.emit('comment', {comment, pid: props.route.params.pid});
@@ -49,7 +49,6 @@ const CommentScreen = props => {
   const InfoCardWrapper = ({item}) => {
     return (
       <InfoCard
-        card_press={() => props.navigation.navigate('profile', {uid: item.uid})}
         title={item.name}
         image={item.profile ? base_url + '/profile/' + item.uid + '.jpg' : null}
         body={item.comment}
