@@ -10,8 +10,6 @@ import {COLORS, FONTS} from './src/constants';
 import AuthScreen from './src/screens/AuthScreen.js';
 import MainScreen from './src/screens/MainScreen.js';
 import BlockedScreen from './src/screens/BlockedScreen.js';
-import AlbumScreen from './src/screens/AlbumScreen.js';
-import PhotosScreen from './src/screens/PhotosScreen.js';
 import UserProfileScreen from './src/screens/UserProfileScreen.js';
 import SearchResultScreen from './src/screens/SearchResultScreen.js';
 import WarningScreen from './src/screens/WarningScreen.js';
@@ -49,16 +47,6 @@ const App = () => {
             name="blocked"
             component={BlockedScreen}
             options={{headerShown: true, headerTitle: 'Blocked'}}
-          />
-          <StackNav.Screen
-            name="album"
-            component={AlbumScreen}
-            options={{headerShown: true, headerTitle: 'Album'}}
-          />
-          <StackNav.Screen
-            name="photos"
-            component={PhotosScreen}
-            options={{headerShown: true, headerTitle: 'Photos'}}
           />
           <StackNav.Screen name="profile" component={UserProfileScreen} />
           <StackNav.Screen

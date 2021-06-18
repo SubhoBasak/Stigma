@@ -51,12 +51,7 @@ const MenuScreen = props => {
           onPress={() => props.navigation.navigate('edit_profile')}
         />
         <MenuItem
-          icon={<IconFE name="camera" color={COLORS.primary} size={28} />}
-          text="Photos"
-          onPress={() => props.navigation.navigate('album')}
-        />
-        <MenuItem
-          onPress={() => alert('Notificaton setting changed')}
+          onPress={() => props.navigation.navigate('notification')}
           icon={
             <IconIO
               name="notifications-outline"

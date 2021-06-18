@@ -16,7 +16,6 @@ import {base_url} from '../../conf.js';
 // icons
 import IconMI from 'react-native-vector-icons/MaterialIcons';
 import IconF from 'react-native-vector-icons/Feather';
-import IconAD from 'react-native-vector-icons/AntDesign';
 
 // constants
 import {COLORS, FONTS} from '../constants';
@@ -205,15 +204,11 @@ const UserProfileScreen = props => {
                 <IconF style={style.icon} name="home" />
                 <Text style={style.mainInfoText}>{address}</Text>
               </View>
-              <View style={style.mainInfo}>
-                <IconAD style={style.icon} name="calendar" />
-                <Text style={style.mainInfoText}>27 May 2001</Text>
-              </View>
             </View>
             <View style={style.buttonContainer}>
               <TouchableOpacity style={style.button}>
-                <IconF name="camera" style={style.icon} />
-                <Text style={style.buttonText}>Photos</Text>
+                <IconF name="user-minus" style={style.icon} />
+                <Text style={style.buttonText}>Remove</Text>
               </TouchableOpacity>
               <TouchableOpacity style={style.button}>
                 <IconF name="message-square" style={style.icon} />
