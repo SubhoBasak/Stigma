@@ -19,7 +19,6 @@ import {COLORS, FONTS} from '../constants/index.js';
 
 // components
 import SearchBar from '../components/SearchBar.js';
-import StatusBar from '../components/StatusBar.js';
 import PostCard from '../components/PostCard.js';
 import DeleteModal from '../components/DeleteModal.js';
 
@@ -199,7 +198,6 @@ const HomeScreen = props => {
             return (
               <>
                 <SearchBar />
-                <StatusBar />
                 <View style={style.upload}>
                   <TouchableOpacity
                     style={style.upload_btn}

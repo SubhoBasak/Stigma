@@ -6,7 +6,6 @@ import {COLORS} from '../constants/index.js';
 
 // components
 import SearchBar from '../components/SearchBar.js';
-import StatusBar from '../components/StatusBar.js';
 import InfoCard from '../components/InfoCard.js';
 
 const AllMessageScreen = props => {
@@ -96,7 +95,6 @@ const AllMessageScreen = props => {
   return (
     <View style={{backgroundColor: COLORS.white}}>
       <SearchBar />
-      <StatusBar />
       <ScrollView>
         <View>
           {all_messages}
