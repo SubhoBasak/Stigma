@@ -1,24 +1,15 @@
 import React from 'react';
-import {
-  SafeAreaView,
-  FlatList,
-  StyleSheet,
-  TextInput,
-  View,
-  TouchableOpacity,
-} from 'react-native';
+import {SafeAreaView, FlatList, StyleSheet, Keyboard} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {base_url} from '../../conf.js';
 
-// icons
-import IconSLI from 'react-native-vector-icons/SimpleLineIcons';
-
 // constants
-import {COLORS, FONTS} from '../constants';
+import {COLORS} from '../constants';
 
 // components
 import PostCard from '../components/PostCard.js';
 import InfoCard from '../components/InfoCard.js';
+import Compose from '../components/Compose.js';
 
 const CommentScreen = props => {
   const [uid, setUid] = React.useState(null);
@@ -31,6 +22,8 @@ const CommentScreen = props => {
   const [loved, setLoved] = React.useState(false);
   const [allComments, setAllComments] = React.useState([]);
   const [comment, setComment] = React.useState('');
+
+  const commentListRef = React.useRef();
 
   const comment_now = () => {
     if (!comment) return;
@@ -45,6 +38,10 @@ const CommentScreen = props => {
             res.json().then(json => {
               setComment('');
               setAllComments(allComments.concat([json]));
+              Keyboard.dismiss();
+              commentListRef.current.scrollToEnd({
+                animated: true,
+              });
             });
           else if (res.status === 401) {
             alert('Unauthorized User! Please login now.');
@@ -121,6 +118,7 @@ const CommentScreen = props => {
   return (
     <SafeAreaView style={style.canvas}>
       <FlatList
+        ref={commentListRef}
         data={allComments}
         renderItem={InfoCardWrapper}
         keyExtractor={item => item.cid}
@@ -138,20 +136,12 @@ const CommentScreen = props => {
           />
         }
       />
-      <View style={style.comment_container}>
-        <View style={style.comment}>
-          <TextInput
-            style={style.text_input}
-            value={comment}
-            multiline={true}
-            onChangeText={text => setComment(text)}
-            placeholder="Enter your comment here..."
-          />
-          <TouchableOpacity onPress={comment_now}>
-            <IconSLI style={style.send_icon} name="arrow-up-circle" />
-          </TouchableOpacity>
-        </View>
-      </View>
+      <Compose
+        value={comment}
+        placeholder="Enter your comment here..."
+        onChangeText={text => setComment(text)}
+        send={comment_now}
+      />
     </SafeAreaView>
   );
 };
@@ -163,40 +153,6 @@ const style = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-between',
     backgroundColor: COLORS.white,
-  },
-  comment_container: {
-    width: '100%',
-    height: 64,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  comment: {
-    width: '95%',
-    height: 48,
-    borderRadius: 27,
-    borderColor: COLORS.primary,
-    borderWidth: 2,
-    paddingHorizontal: 14,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  text_input: {
-    fontFamily: FONTS.font_regular,
-    fontSize: 17,
-    width: '90%',
-  },
-  send_icon: {
-    width: 24,
-    height: 24,
-    fontSize: 24,
-    minWidth: 24,
-    minHeight: 24,
-    maxWidth: 24,
-    maxHeight: 24,
-    color: COLORS.primary,
   },
 });
 
