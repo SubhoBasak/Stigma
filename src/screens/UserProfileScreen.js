@@ -73,7 +73,7 @@ const UserProfileScreen = props => {
   const PostCardWrapper = ({item}) => {
     return (
       <PostCard
-        own={true}
+        own={props.route.params ? false : true}
         pid={item._id}
         profile={image}
         image={item.photo}
@@ -87,6 +87,7 @@ const UserProfileScreen = props => {
           setPid(item._id);
           setDeleteModal(!deleteModal);
         }}
+        hide_buttons={props.route.params ? true : false}
       />
     );
   };

@@ -106,7 +106,7 @@ const CommentScreen = props => {
             alert('Post not found!');
             props.navigation.goBack();
           } else if (res.status === 500)
-            props.navigation.navigate('warning', {stauts: 1});
+            props.navigation.navigate('warning', {status: 1});
         });
       })
       .catch(() => {
@@ -133,6 +133,7 @@ const CommentScreen = props => {
             share={share}
             loved={loved}
             pid={props.route.params.pid}
+            hide_buttons={true}
           />
         }
       />

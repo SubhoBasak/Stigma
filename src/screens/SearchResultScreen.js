@@ -344,7 +344,7 @@ const SearchResultScreen = props => {
           body={item.email}
           button1="Message"
           button2="Remove"
-          onPress1={() => props.navigation.navigate('message', {uid: item.cid})}
+          onPress1={() => props.navigation.navigate('message', {uid: item.uid})}
           onPress2={() => remove_warning(item.cid)}
           card_press={() =>
             props.navigation.navigate('profile', {uid: item.uid})

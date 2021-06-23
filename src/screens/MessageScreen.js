@@ -1,5 +1,5 @@
 import React from 'react';
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {SafeAreaView, FlatList, StyleSheet, View} from 'react-native';
 
 // constants
 import {COLORS} from '../constants';
@@ -11,29 +11,22 @@ import MessageCard from '../components/MessageCard.js';
 import {base_url} from '../../conf';
 
 const MessageScreen = props => {
-  const [image, setImage] = React.useState(null);
+  const [allMessage, setAllMessage] = React.useState([]);
+
+  // <MessageCard message="This is a test message." />;
 
   return (
-    <View style={style.canvas}>
+    <SafeAreaView style={style.canvas}>
       <View style={style.header}>
         <InfoCard title="User Name" body="Online" />
       </View>
-      <ScrollView>
-        <MessageCard message="This is a test message. This is a test message. This is a test message. This is a test message. This is a test message. " />
-        <MessageCard send={true} message="This is a small message." />
-        <MessageCard
-          send={true}
-          message="This is a test message. This is a test message. This is a test message. This is a test message. This is a test message."
-        />
-        <MessageCard message="This is a test message. This is a test message. This is a test message. This is a test message. This is a test message. " />
-        <MessageCard send={false} message="This is a small message." />
-        <MessageCard
-          send={true}
-          message="This is a test message. This is a test message. This is a test message. This is a test message. This is a test message."
-        />
-      </ScrollView>
+      <FlatList
+        data={allMessage}
+        renderItem={MessageCard}
+        keyExtractor={item => item._id}
+      />
       <Compose placeholder="Enter your message..." />
-    </View>
+    </SafeAreaView>
   );
 };
 
