@@ -14,6 +14,7 @@ const Connected = props => {
   const [loading, setLoading] = React.useState(false);
   const [allUsers, setAllUsers] = React.useState([]);
   const [reload, setReload] = React.useState(false);
+  const [token, setToken] = React.useState(null);
 
   const remove_api = cid => {
     AsyncStorage.getItem('@token')
@@ -68,7 +69,9 @@ const Connected = props => {
         button1="Remove"
         button2="Message"
         onPress1={() => remove_warning(item.cid)}
-        onPress2={() => props.navigation.navigate('message', {uid: item.uid})}
+        onPress2={() =>
+          props.navigation.navigate('message', {uid: item.uid, token})
+        }
         card_press={() => props.navigation.navigate('profile', {uid: item.uid})}
       />
     );
@@ -77,6 +80,7 @@ const Connected = props => {
   React.useEffect(() => {
     AsyncStorage.getItem('@token')
       .then(token => {
+        setToken(token);
         fetch(base_url + '/connection/connected', {
           method: 'GET',
           headers: {'Content-Type': 'application/json', Authorization: token},

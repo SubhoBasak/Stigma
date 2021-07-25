@@ -14,6 +14,7 @@ const AllMessageScreen = props => {
   const [loading, setLoading] = React.useState(false);
   const [allUsers, setAllUsers] = React.useState([]);
   const [reload, setReload] = React.useState(false);
+  const [token, setToken] = React.useState(null);
 
   const InfoCardWrapper = ({item}) => {
     return (
@@ -21,7 +22,9 @@ const AllMessageScreen = props => {
         title={item.name}
         body={item.email}
         image={item.image ? base_url + '/profile/' + item.uid + '.jpg' : null}
-        card_press={() => props.navigation.navigate('message', {uid: item.uid})}
+        card_press={() =>
+          props.navigation.navigate('message', {uid: item.uid, token})
+        }
       />
     );
   };
@@ -29,6 +32,7 @@ const AllMessageScreen = props => {
   React.useEffect(() => {
     AsyncStorage.getItem('@token')
       .then(token => {
+        setToken(token);
         fetch(base_url + '/connection/connected', {
           method: 'GET',
           headers: {'Content-Type': 'application/json', Authorization: token},

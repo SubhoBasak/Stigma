@@ -13,6 +13,7 @@ const SearchResultScreen = props => {
   const [loading, setLoading] = React.useState(false);
   const [reload, setReload] = React.useState(false);
   const [users, setUsers] = React.useState([]);
+  const [token, setToken] = React.useState(null);
 
   const send_request_api = uid => {
     AsyncStorage.getItem('@token')
@@ -344,7 +345,9 @@ const SearchResultScreen = props => {
           body={item.email}
           button1="Message"
           button2="Remove"
-          onPress1={() => props.navigation.navigate('message', {uid: item.uid})}
+          onPress1={() =>
+            props.navigation.navigate('message', {uid: item.uid, token})
+          }
           onPress2={() => remove_warning(item.cid)}
           card_press={() =>
             props.navigation.navigate('profile', {uid: item.uid})
@@ -357,6 +360,7 @@ const SearchResultScreen = props => {
   React.useEffect(() => {
     AsyncStorage.getItem('@token')
       .then(token => {
+        setToken(token);
         fetch(
           base_url +
             '/connection/search?' +
